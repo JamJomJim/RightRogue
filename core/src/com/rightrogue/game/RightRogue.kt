@@ -11,8 +11,8 @@ import com.rightrogue.game.states.PlayState
 
 class RightRogue : ApplicationAdapter() {
     companion object {
-        val WIDTH: Int = 1024
-        val HEIGHT: Int = 512
+        const val WIDTH: Int = 1024
+        const val HEIGHT: Int = 512
     }
 
 

@@ -2,8 +2,7 @@ package com.rightrogue.game.states
 
 import java.util.Random
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input.Keys
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.rightrogue.game.GameStateManager
 import com.rightrogue.game.RightRogue
@@ -16,18 +15,18 @@ class PlayState(gsm: GameStateManager) : State(gsm){
     private var player: Player = Player(0f, 8f )
     private var map = MutableList(RightRogue.WIDTH /32) {arrayOfNulls<Block>(RightRogue.HEIGHT /32).toMutableList()}
     private var distanceCompleted = 0
-    val random = Random()
+    private val random = Random()
 
     init {
         cam.setToOrtho(true, (RightRogue.WIDTH).toFloat(), (RightRogue.HEIGHT).toFloat())
         newMap()
     }
 
-    fun rand(from: Int, to: Int) : Int {
+    private fun rand(from: Int, to: Int) : Int {
         return random.nextInt(to - from + 1) + from
     }
 
-    fun newMap(){
+    private fun newMap(){
         for (i in 0 until map.size) {
             for (j in 0 until map[i].size) {
                 map[i][j] = Block(i.toFloat(), j.toFloat())
@@ -52,9 +51,9 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         }
     }
 
-    fun updateMap(){
+    private fun updateMap(){
 
-        var newMapPiece = arrayOfNulls<Block>(RightRogue.HEIGHT /32).toMutableList()
+        val newMapPiece = arrayOfNulls<Block>(RightRogue.HEIGHT /32).toMutableList()
 
         for (i in 0 until newMapPiece.size) {
                 newMapPiece[i] = Block(RightRogue.WIDTH /32f - 1 + distanceCompleted, i.toFloat())
@@ -67,6 +66,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
             1 -> y = map[RightRogue.WIDTH / 32 - 1].lastIndexOf(null)
         }
 
+        newMapPiece[y] = null
         while (x < RightRogue.WIDTH /32 + distanceCompleted) {
             when(rand(1, 8)){
                 1,2,3,4 -> {
@@ -87,16 +87,14 @@ class PlayState(gsm: GameStateManager) : State(gsm){
     }
 
     override fun handleInput(dt: Float) {
-        if(Gdx.input.isKeyPressed(Keys.LEFT)) player.position.x -= RightRogue.WIDTH * dt
-        if(Gdx.input.isKeyPressed(Keys.RIGHT)) player.position.x += RightRogue.WIDTH * dt
-        if(Gdx.input.isKeyPressed(Keys.UP)) player.position.y -= RightRogue.HEIGHT * dt
-        if(Gdx.input.isKeyPressed(Keys.DOWN)) player.position.y += RightRogue.HEIGHT * dt
+        player.handleInput()
     }
 
     override fun update(dt: Float) {
         //println(player.position.x)
         //println(distanceCompleted)
         handleInput(dt)
+        player.update(dt)
 
         if (player.position.x.toInt() / 32 > distanceCompleted) {
             updateMap()
