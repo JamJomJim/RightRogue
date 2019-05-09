@@ -13,7 +13,7 @@ import com.rightrogue.game.sprites.Player
 class PlayState(gsm: GameStateManager) : State(gsm){
 
     private var player: Player = Player(0f, 8f )
-    private var map = MutableList(RightRogue.WIDTH /32) {arrayOfNulls<Block>(RightRogue.HEIGHT /32).toMutableList()}
+    private var map = MutableList(RightRogue.WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.HEIGHT /32).toMutableList()}
     private var distanceCompleted = 0
     private val random = Random()
 
@@ -37,7 +37,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         var x = 0
         var y = RightRogue.HEIGHT / 32 / 2
 
-        while (x < RightRogue.WIDTH /32 - 1) {
+        while (x < RightRogue.WIDTH /32 + 2 - 1) {
               when(rand(1, 8)){
                   1,2,3,4 -> x += 1
                   5,6-> {
@@ -56,18 +56,20 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         val newMapPiece = arrayOfNulls<Block>(RightRogue.HEIGHT /32).toMutableList()
 
         for (i in 0 until newMapPiece.size) {
-                newMapPiece[i] = Block(RightRogue.WIDTH /32f - 1 + distanceCompleted, i.toFloat())
+                newMapPiece[i] = Block(RightRogue.WIDTH /32f + distanceCompleted, i.toFloat())
         }
 
-        var x = RightRogue.WIDTH /32 - 1 + distanceCompleted
-        var y = map[RightRogue.WIDTH /32 - 1].indexOf(null)
-        when (rand(0, 1)) {
-            0 -> y = map[RightRogue.WIDTH / 32 - 1].indexOf(null)
-            1 -> y = map[RightRogue.WIDTH / 32 - 1].lastIndexOf(null)
+        var x = map.indexOf(map.last()) + distanceCompleted
+        var y = map.last().indexOf(null)
+
+        if (rand(0, 1) == 1) {
+            y = map.last().lastIndexOf(null)
         }
 
+        //println("default spawn at: " + newMapPiece[y]?.position?.x + ", " + newMapPiece[y]?.position?.y)
         newMapPiece[y] = null
-        while (x < RightRogue.WIDTH /32 + distanceCompleted) {
+
+        while (x == map.indexOf(map.last()) + distanceCompleted) {
             when(rand(1, 8)){
                 1,2,3,4 -> {
                     x += 1
@@ -79,7 +81,9 @@ class PlayState(gsm: GameStateManager) : State(gsm){
                     if (y > 1) y -= 1
                 }
             }
+            //println("while spawn at: " + newMapPiece[y]?.position?.x + ", " + newMapPiece[y]?.position?.y)
             newMapPiece[y] = null
+
         }
 
         map = map.drop(1).toMutableList()
@@ -96,7 +100,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         handleInput(dt)
         player.update(dt)
 
-        if (player.position.x.toInt() / 32 > distanceCompleted) {
+        if (player.position.x.toInt() / 32 > distanceCompleted && player.position.x / 32 > 3) {
             updateMap()
         }
 
@@ -105,7 +109,9 @@ class PlayState(gsm: GameStateManager) : State(gsm){
             cam.update()
         }
 
-        distanceCompleted = player.position.x.toInt() / 32
+        if (player.position.x.toInt() / 32 > distanceCompleted) {
+            distanceCompleted = player.position.x.toInt() / 32
+        }
 
     }
 
