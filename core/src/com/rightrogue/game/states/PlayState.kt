@@ -12,13 +12,15 @@ import com.rightrogue.game.sprites.Player
 
 class PlayState(gsm: GameStateManager) : State(gsm){
 
+//todo https://gist.github.com/williamahartman/5584f037ed2748f57432 use this to figure out how to add distance to top right
+
     private var player: Player = Player(0f, 8f )
-    private var map = MutableList(RightRogue.WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.HEIGHT /32).toMutableList()}
+    private var map = MutableList(RightRogue.PIXEL_WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()}
     private var distanceCompleted = 0
     private val random = Random()
 
     init {
-        cam.setToOrtho(true, (RightRogue.WIDTH).toFloat(), (RightRogue.HEIGHT).toFloat())
+        cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
         newMap()
     }
 
@@ -27,21 +29,22 @@ class PlayState(gsm: GameStateManager) : State(gsm){
     }
 
     private fun newMap(){
+        println("test ${1+12}")
         for (i in 0 until map.size) {
             for (j in 0 until map[i].size) {
                 map[i][j] = Block(i.toFloat(), j.toFloat())
             }
         }
-        map[0][RightRogue.HEIGHT / 32 / 2] = null
+        map[0][RightRogue.PIXEL_HEIGHT / 32 / 2] = null
 
         var x = 0
-        var y = RightRogue.HEIGHT / 32 / 2
+        var y = RightRogue.PIXEL_HEIGHT / 32 / 2
 
-        while (x < RightRogue.WIDTH /32 + 2 - 1) {
+        while (x < RightRogue.PIXEL_WIDTH /32 + 2 - 1) {
               when(rand(1, 8)){
                   1,2,3,4 -> x += 1
                   5,6-> {
-                      if (y < RightRogue.HEIGHT / 32 - 2) y += 1
+                      if (y < RightRogue.PIXEL_HEIGHT / 32 - 2) y += 1
                   }
                   7,8 -> {
                       if (y > 1) y -= 1
@@ -53,10 +56,10 @@ class PlayState(gsm: GameStateManager) : State(gsm){
 
     private fun updateMap(){
 
-        val newMapPiece = arrayOfNulls<Block>(RightRogue.HEIGHT /32).toMutableList()
+        val newMapPiece = arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()
 
         for (i in 0 until newMapPiece.size) {
-                newMapPiece[i] = Block(RightRogue.WIDTH /32f + distanceCompleted, i.toFloat())
+                newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH /32f + distanceCompleted, i.toFloat())
         }
 
         var x = map.indexOf(map.last()) + distanceCompleted
@@ -75,7 +78,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
                     x += 1
                 }
                 5,6 -> {
-                    if (y < RightRogue.HEIGHT / 32 - 2) y += 1
+                    if (y < RightRogue.PIXEL_HEIGHT / 32 - 2) y += 1
                 }
                 7,8 -> {
                     if (y > 1) y -= 1
@@ -95,8 +98,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
     }
 
     override fun update(dt: Float) {
-        //println(player.position.x)
-        //println(distanceCompleted)
+        //todo add in bounds so cant fly off screen
         handleInput(dt)
         player.update(dt)
 
@@ -104,8 +106,8 @@ class PlayState(gsm: GameStateManager) : State(gsm){
             updateMap()
         }
 
-        if (cam.position.x < player.position.x + RightRogue.WIDTH / 2 - 64){
-            cam.position.x += player.position.x + RightRogue.WIDTH / 2 - 64 - cam.position.x
+        if (cam.position.x < player.position.x + RightRogue.PIXEL_WIDTH / 2 - 64){
+            cam.position.x += player.position.x + RightRogue.PIXEL_WIDTH / 2 - 64 - cam.position.x
             cam.update()
         }
 

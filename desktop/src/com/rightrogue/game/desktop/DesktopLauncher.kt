@@ -8,8 +8,8 @@ object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
         val config = LwjglApplicationConfiguration()
-        config.width = RightRogue.WIDTH
-        config.height = RightRogue.HEIGHT
+        config.width = RightRogue.PIXEL_WIDTH
+        config.height = RightRogue.PIXEL_HEIGHT
         LwjglApplication(RightRogue(), config)
     }
 }
