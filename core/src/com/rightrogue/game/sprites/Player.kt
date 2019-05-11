@@ -3,10 +3,12 @@ package com.rightrogue.game.sprites
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.*
 import com.rightrogue.game.RightRogue
 
-class Player (x: Float, y: Float){
+class Player (world: World, x: Float, y: Float){
     val MAX_VEL = 1000f
     val DAMP = 0.9f
 
@@ -14,6 +16,22 @@ class Player (x: Float, y: Float){
     var velocity: Vector2 = Vector2(0f,0f)
     var acceleration: Vector2 = Vector2(0f,0f)
     var texture: Texture = Texture("placeholder.png")
+    var sprite = Sprite(texture, position.x.toInt(), position.y.toInt())
+    var bodyDef = BodyDef()
+    var body: Body
+    var fixtureDef = FixtureDef()
+
+    init {
+        bodyDef.type = BodyDef.BodyType.DynamicBody
+        bodyDef.position.set(position)
+        body = world.createBody(bodyDef)
+        val shape = PolygonShape()
+        shape.setAsBox(sprite.width/2, sprite.height/2)
+
+        fixtureDef.shape = shape
+        body.createFixture(fixtureDef)
+        shape.dispose()
+    }
 
     //todo add in movement animations
     //todo add in collisions

@@ -1,9 +1,12 @@
 package com.rightrogue.game.states
 
+import com.badlogic.gdx.Gdx
 import java.util.Random
 
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.World
 import com.rightrogue.game.GameStateManager
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.sprites.Block
@@ -13,8 +16,8 @@ import com.rightrogue.game.sprites.Player
 class PlayState(gsm: GameStateManager) : State(gsm){
 
 //todo https://gist.github.com/williamahartman/5584f037ed2748f57432 use this to figure out how to add distance to top right
-
-    private var player: Player = Player(0f, 8f )
+    private var world = World(Vector2(0f, -98f), true)
+    private var player: Player = Player(world, 0f, 8f )
     private var map = MutableList(RightRogue.PIXEL_WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()}
     private var distanceCompleted = 0
     private val random = Random()
@@ -22,6 +25,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
     init {
         cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
         newMap()
+
     }
 
     private fun rand(from: Int, to: Int) : Int {
@@ -114,7 +118,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         if (player.position.x.toInt() / 32 > distanceCompleted) {
             distanceCompleted = player.position.x.toInt() / 32
         }
-
+        world.step(Gdx.graphics.deltaTime, 2, 2)
     }
 
     override fun render(sb: SpriteBatch) {
