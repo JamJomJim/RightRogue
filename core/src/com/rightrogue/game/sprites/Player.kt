@@ -5,10 +5,8 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.*
-import com.rightrogue.game.RightRogue
 
-class Player (world: World, x: Float, y: Float){
+class Player (x: Float, y: Float){
     val MAX_VEL = 1000f
     val DAMP = 0.9f
 
@@ -16,28 +14,18 @@ class Player (world: World, x: Float, y: Float){
     var velocity: Vector2 = Vector2(0f,0f)
     var acceleration: Vector2 = Vector2(0f,0f)
     var texture: Texture = Texture("placeholder.png")
-    var sprite = Sprite(texture, position.x.toInt(), position.y.toInt())
-    var bodyDef = BodyDef()
-    var body: Body
-    var fixtureDef = FixtureDef()
-
+    var sprite = Sprite(texture)
     init {
-        bodyDef.type = BodyDef.BodyType.DynamicBody
-        bodyDef.position.set(position)
-        body = world.createBody(bodyDef)
-        val shape = PolygonShape()
-        shape.setAsBox(sprite.width/2, sprite.height/2)
-
-        fixtureDef.shape = shape
-        body.createFixture(fixtureDef)
-        shape.dispose()
+        sprite.x = position.x
+        sprite.y = position.y
     }
+
 
     //todo add in movement animations
     //todo add in collisions
     fun handleInput(){
         //todo change to be scaled values.
-        //todo add gravity
+        //todo add gravity - need collisions first...
         when {
             Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> acceleration.x = 100f
             Gdx.input.isKeyPressed(Input.Keys.LEFT) -> acceleration.x = -100f
@@ -55,7 +43,8 @@ class Player (world: World, x: Float, y: Float){
         if (velocity.y < -MAX_VEL) velocity.y = -MAX_VEL
 
         velocity.scl(dt)
-        position.add(velocity)
+        sprite.x += velocity.x
+        sprite.y += velocity.y
         velocity.scl(DAMP/dt)
     }
 }

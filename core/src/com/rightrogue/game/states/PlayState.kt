@@ -1,12 +1,9 @@
 package com.rightrogue.game.states
 
-import com.badlogic.gdx.Gdx
 import java.util.Random
 
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.World
 import com.rightrogue.game.GameStateManager
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.sprites.Block
@@ -16,8 +13,7 @@ import com.rightrogue.game.sprites.Player
 class PlayState(gsm: GameStateManager) : State(gsm){
 
 //todo https://gist.github.com/williamahartman/5584f037ed2748f57432 use this to figure out how to add distance to top right
-    private var world = World(Vector2(0f, -98f), true)
-    private var player: Player = Player(world, 0f, 8f )
+    private var player: Player = Player(0f, 8f )
     private var map = MutableList(RightRogue.PIXEL_WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()}
     private var distanceCompleted = 0
     private val random = Random()
@@ -33,7 +29,6 @@ class PlayState(gsm: GameStateManager) : State(gsm){
     }
 
     private fun newMap(){
-        println("test ${1+12}")
         for (i in 0 until map.size) {
             for (j in 0 until map[i].size) {
                 map[i][j] = Block(i.toFloat(), j.toFloat())
@@ -106,19 +101,20 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         handleInput(dt)
         player.update(dt)
 
-        if (player.position.x.toInt() / 32 > distanceCompleted && player.position.x / 32 > 3) {
+        if (player.sprite.x.toInt() / 32 > distanceCompleted && player.sprite.x / 32 > 3) {
+            println(player.sprite.x / 32)
+            println(distanceCompleted)
             updateMap()
         }
 
-        if (cam.position.x < player.position.x + RightRogue.PIXEL_WIDTH / 2 - 64){
-            cam.position.x += player.position.x + RightRogue.PIXEL_WIDTH / 2 - 64 - cam.position.x
+        if (cam.position.x < player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 64){
+            cam.position.x += player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 64 - cam.position.x
             cam.update()
         }
 
-        if (player.position.x.toInt() / 32 > distanceCompleted) {
-            distanceCompleted = player.position.x.toInt() / 32
+        if (player.sprite.x / 32 > distanceCompleted) {
+            distanceCompleted = player.sprite.x.toInt() / 32
         }
-        world.step(Gdx.graphics.deltaTime, 2, 2)
     }
 
     override fun render(sb: SpriteBatch) {
@@ -132,7 +128,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
                 .forEach { it.draw(sb) }
 
 
-        sb.draw(player.texture, player.position.x, player.position.y)
+        sb.draw(player.sprite.texture, player.sprite.x, player.sprite.y)
         sb.end()
 
     }
