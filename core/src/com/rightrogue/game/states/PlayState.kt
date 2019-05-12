@@ -13,8 +13,8 @@ import com.rightrogue.game.sprites.Player
 class PlayState(gsm: GameStateManager) : State(gsm){
 
 //todo https://gist.github.com/williamahartman/5584f037ed2748f57432 use this to figure out how to add distance to top right
+    var map = MutableList(RightRogue.PIXEL_WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()}
     private var player: Player = Player(0f, 8f )
-    private var map = MutableList(RightRogue.PIXEL_WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()}
     private var distanceCompleted = 0
     private val random = Random()
 
@@ -26,6 +26,16 @@ class PlayState(gsm: GameStateManager) : State(gsm){
 
     private fun rand(from: Int, to: Int) : Int {
         return random.nextInt(to - from + 1) + from
+    }
+
+    fun checkCollsions(){
+        var collidableBlocks = arrayOfNulls<Block?>(4).toMutableList()
+        println(Math.floor((player.sprite.x).toDouble() / 32))
+        println(map[0][1]?.position?.x)
+        println(" dist: $distanceCompleted")
+        var temp = 0
+        if (distanceCompleted >= 3)  println(Math.floor((player.sprite.x).toDouble() / 32) - distanceCompleted + 2)
+        else println(Math.floor((player.sprite.x).toDouble() / 32) - distanceCompleted)
     }
 
     private fun newMap(){
@@ -58,7 +68,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         val newMapPiece = arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()
 
         for (i in 0 until newMapPiece.size) {
-                newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH /32f + distanceCompleted, i.toFloat())
+                newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH /32f + distanceCompleted - 1, i.toFloat())
         }
 
         var x = map.indexOf(map.last()) + distanceCompleted
@@ -97,23 +107,20 @@ class PlayState(gsm: GameStateManager) : State(gsm){
     }
 
     override fun update(dt: Float) {
-        //todo add in bounds so cant fly off screen
         handleInput(dt)
-        player.update(dt)
+        player.update(cam.position.x, dt)
+        checkCollsions()
 
         if (player.sprite.x.toInt() / 32 > distanceCompleted && player.sprite.x / 32 > 3) {
-            println(player.sprite.x / 32)
-            println(distanceCompleted)
+
+            distanceCompleted = player.sprite.x.toInt() / 32
             updateMap()
+
         }
 
         if (cam.position.x < player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 64){
             cam.position.x += player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 64 - cam.position.x
             cam.update()
-        }
-
-        if (player.sprite.x / 32 > distanceCompleted) {
-            distanceCompleted = player.sprite.x.toInt() / 32
         }
     }
 
@@ -122,11 +129,9 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         sb.projectionMatrix = cam.combined
         sb.begin()
 
-
         map.flatMap{ it.toList() }
                 .filterNotNull()
                 .forEach { it.draw(sb) }
-
 
         sb.draw(player.sprite.texture, player.sprite.x, player.sprite.y)
         sb.end()

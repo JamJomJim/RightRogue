@@ -21,7 +21,7 @@ class RightRogue : ApplicationAdapter() {
 
     lateinit var batch: SpriteBatch
     private lateinit var block: Texture
-    private lateinit var gsm: GameStateManager
+    lateinit var gsm: GameStateManager
 
 
     override fun create() {
