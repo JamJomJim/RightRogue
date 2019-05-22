@@ -14,8 +14,9 @@ class PlayState(gsm: GameStateManager) : State(gsm){
 
 //todo https://gist.github.com/williamahartman/5584f037ed2748f57432 use this to figure out how to add distance to top right
     var map = MutableList(RightRogue.PIXEL_WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()}
-    private var player: Player = Player(0f, 8f )
+    private var player: Player = Player(3f, 8f )
     private var distanceCompleted = 0
+    private var temp = 0
     private val random = Random()
 
     init {
@@ -28,14 +29,20 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         return random.nextInt(to - from + 1) + from
     }
 
-    fun checkCollsions(){
-        var collidableBlocks = arrayOfNulls<Block?>(4).toMutableList()
-        println(Math.floor((player.sprite.x).toDouble() / 32))
-        println(map[0][1]?.position?.x)
-        println(" dist: $distanceCompleted")
-        var temp = 0
-        if (distanceCompleted >= 3)  println(Math.floor((player.sprite.x).toDouble() / 32) - distanceCompleted + 2)
-        else println(Math.floor((player.sprite.x).toDouble() / 32) - distanceCompleted)
+    fun entityCollides(x: Float, y: Float, width: Float, height: Float): Boolean{
+        //todo change to check if it collides with map block rectangle
+        println(temp)
+        println(x.toInt() / 32 - temp )
+        for ( i in x.toInt() / 32 - temp until (x / 32 - temp + width / 32).toInt()){
+            for ( j in y.toInt() / 32 until (y /32 + height / 32).toInt()){
+                println( " " + i + " " + j)
+                if (map[i][j] != null) {
+                    println("collides with " + i + ", " + j)
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     private fun newMap(){
@@ -45,7 +52,9 @@ class PlayState(gsm: GameStateManager) : State(gsm){
             }
         }
         map[0][RightRogue.PIXEL_HEIGHT / 32 / 2] = null
-
+        map[1][RightRogue.PIXEL_HEIGHT / 32 / 2] = null
+        map[2][RightRogue.PIXEL_HEIGHT / 32 / 2] = null
+        map[3][RightRogue.PIXEL_HEIGHT / 32 / 2] = null
         var x = 0
         var y = RightRogue.PIXEL_HEIGHT / 32 / 2
 
@@ -108,12 +117,12 @@ class PlayState(gsm: GameStateManager) : State(gsm){
 
     override fun update(dt: Float) {
         handleInput(dt)
-        player.update(cam.position.x, dt)
-        checkCollsions()
+        //entityCollides(player.sprite.x / 32 - temp, player.sprite.y / 32, 32f, 32f)
 
         if (player.sprite.x.toInt() / 32 > distanceCompleted && player.sprite.x / 32 > 3) {
 
             distanceCompleted = player.sprite.x.toInt() / 32
+            temp += 1
             updateMap()
 
         }
@@ -122,6 +131,25 @@ class PlayState(gsm: GameStateManager) : State(gsm){
             cam.position.x += player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 64 - cam.position.x
             cam.update()
         }
+
+        player.update(cam.position.x, dt)
+
+        if (player.sprite.x + player.velocity.x < cam.position.x - RightRogue.PIXEL_WIDTH / 2
+                || entityCollides(player.rectangle.x, player.rectangle.y,32f, 32f))
+            player.velocity.x = 0f
+
+        else player.sprite.x += player.velocity.x
+
+
+        when{
+            player.sprite.y + player.velocity.y > RightRogue.PIXEL_HEIGHT - 33 -> player.sprite.y = RightRogue.PIXEL_HEIGHT - 32f
+            player.sprite.y + player.velocity.y < 0 -> player.sprite.y = 0f
+            else -> player.sprite.y += player.velocity.y
+        }
+
+        player.rectangle.x = player.sprite.x
+        player.rectangle.y = player.sprite.y
+        player.velocity.scl(player.DAMP/dt)
     }
 
     override fun render(sb: SpriteBatch) {
