@@ -4,6 +4,7 @@ import java.util.Random
 
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Rectangle
 import com.rightrogue.game.GameStateManager
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.sprites.Block
@@ -29,17 +30,16 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         return random.nextInt(to - from + 1) + from
     }
 
-    fun entityCollides(x: Float, y: Float, width: Float, height: Float): Boolean{
-        //todo change to check if it collides with map block rectangle
-        println(temp)
-        println(x.toInt() / 32 - temp )
-        for ( i in x.toInt() / 32 - temp until (x / 32 - temp + width / 32).toInt()){
-            for ( j in y.toInt() / 32 until (y /32 + height / 32).toInt()){
-                println( " " + i + " " + j)
-                if (map[i][j] != null) {
-                    println("collides with " + i + ", " + j)
-                    return true
-                }
+    //todo make a version that works for the whole map not just the player
+
+    fun entityCollides(x: Float, y: Float): Boolean{
+        var tempRectangle = Rectangle(player.rectangle)
+        tempRectangle.x += x
+        tempRectangle.y += y
+
+        for ( i in 0..4 ){
+            for ( j in 0 until map[i].size){
+                if ( map[i][j]?.rectangle != null && tempRectangle.overlaps(map[i][j]?.rectangle)) return true
             }
         }
         return false
@@ -55,7 +55,8 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         map[1][RightRogue.PIXEL_HEIGHT / 32 / 2] = null
         map[2][RightRogue.PIXEL_HEIGHT / 32 / 2] = null
         map[3][RightRogue.PIXEL_HEIGHT / 32 / 2] = null
-        var x = 0
+
+        var x = 3
         var y = RightRogue.PIXEL_HEIGHT / 32 / 2
 
         while (x < RightRogue.PIXEL_WIDTH /32 + 2 - 1) {
@@ -112,13 +113,12 @@ class PlayState(gsm: GameStateManager) : State(gsm){
     }
 
     override fun handleInput(dt: Float) {
-        player.handleInput()
+        player.handleInput(dt)
     }
 
     override fun update(dt: Float) {
         handleInput(dt)
-        //entityCollides(player.sprite.x / 32 - temp, player.sprite.y / 32, 32f, 32f)
-
+        //todo move player movement to Player class
         if (player.sprite.x.toInt() / 32 > distanceCompleted && player.sprite.x / 32 > 3) {
 
             distanceCompleted = player.sprite.x.toInt() / 32
@@ -132,23 +132,33 @@ class PlayState(gsm: GameStateManager) : State(gsm){
             cam.update()
         }
 
-        player.update(cam.position.x, dt)
+        player.update(dt)
 
         if (player.sprite.x + player.velocity.x < cam.position.x - RightRogue.PIXEL_WIDTH / 2
-                || entityCollides(player.rectangle.x, player.rectangle.y,32f, 32f))
+                || entityCollides(player.velocity.x, 0f)) {
             player.velocity.x = 0f
 
+
+        }
         else player.sprite.x += player.velocity.x
 
+        if (entityCollides(0f, player.velocity.y)) {
+            if (player.velocity.y > 0)
+                player.grounded = true
 
-        when{
-            player.sprite.y + player.velocity.y > RightRogue.PIXEL_HEIGHT - 33 -> player.sprite.y = RightRogue.PIXEL_HEIGHT - 32f
-            player.sprite.y + player.velocity.y < 0 -> player.sprite.y = 0f
-            else -> player.sprite.y += player.velocity.y
+            player.acceleration.y = 0f
+            player.velocity.y = 0f
         }
+        else player.sprite.y += player.velocity.y
 
-        player.rectangle.x = player.sprite.x
-        player.rectangle.y = player.sprite.y
+//        when{
+//            player.sprite.y + player.velocity.y > RightRogue.PIXEL_HEIGHT - 33 -> player.sprite.y = RightRogue.PIXEL_HEIGHT - 32f
+//            player.sprite.y + player.velocity.y < 0 -> player.sprite.y = 0f
+//            else -> player.sprite.y += player.velocity.y
+//        }
+
+        player.rectangle.x = player.sprite.x + 1
+        player.rectangle.y = player.sprite.y + 1
         player.velocity.scl(player.DAMP/dt)
     }
 
