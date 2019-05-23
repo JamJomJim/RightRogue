@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.rightrogue.game.RightRogue
+import com.rightrogue.game.states.PlayState
 
 //todo add generic entity class
 class Player (x: Float, y: Float){
@@ -26,10 +28,9 @@ class Player (x: Float, y: Float){
     }
 
 
-
     //todo add in movement animations
-    //todo add in collisions
-    fun handleInput(dt: Float){
+    fun handleInput(state: PlayState, dt: Float){
+        //todo separate the input handling and the actual update of player
         //todo change to be scaled values.
         when {
             Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> velocity.x = 500f
@@ -46,21 +47,48 @@ class Player (x: Float, y: Float){
             velocity.y += -1020 * dt
         }
 
-        //if (Gdx.input.isKeyPressed(Input.Keys.DOWN))  acceleration.y = +100f
-    }
 
-    fun update(dt: Float){
+
         acceleration.y += 1500f * dt
         velocity.add(acceleration.scl(dt))
         acceleration.scl(1/dt)
 
+        //if the player velocity is higher/lower than the max/min, set it to the max/min.
         if (velocity.x > MAX_VEL) velocity.x = MAX_VEL
         if (velocity.x < -MAX_VEL) velocity.x = -MAX_VEL
         if (velocity.y > MAX_VEL) velocity.y = MAX_VEL
         if (velocity.y < -MAX_VEL) velocity.y = -MAX_VEL
 
         velocity.scl(dt)
-        println(velocity.y)
+
+        //if the player is going to collide with something, set its velocity to 0
+        //need to change this so that it moves the player as far as they can go, and then set the velocity to 0.
+        if (this.sprite.x + this.velocity.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2
+                || state.entityCollides(this.velocity.x, 0f))
+            this.velocity.x = 0f
+
+        else this.sprite.x += this.velocity.x
+
+
+        if (state.entityCollides(0f, this.velocity.y)) {
+            if (this.velocity.y > 0)
+                this.grounded = true
+
+            this.acceleration.y = 0f
+            this.velocity.y = 0f
+        }
+        else this.sprite.y += this.velocity.y
+
+        this.rectangle.x = this.sprite.x + 1
+        this.rectangle.y = this.sprite.y + 1
+
+        this.velocity.scl(this.DAMP/dt)
+
+
+
+    }
+
+    fun update(dt: Float){
 
     }
 }
