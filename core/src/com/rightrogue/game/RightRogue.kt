@@ -8,14 +8,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.rightrogue.game.states.MenuState
 import com.rightrogue.game.states.PlayState
 
-
-
 class RightRogue : ApplicationAdapter() {
     companion object {
+        const val MAX_VEL = 256f
         const val PIXEL_WIDTH: Int = 1024
         const val PIXEL_HEIGHT: Int = 512
         const val BLOCK_WIDTH = PIXEL_WIDTH / 32
-        const val BLOCK_HEIGHT = PIXEL_WIDTH / 32
+        const val BLOCK_HEIGHT = PIXEL_HEIGHT / 32
     }
 
 

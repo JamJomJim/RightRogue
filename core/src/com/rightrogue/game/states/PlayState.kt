@@ -49,6 +49,7 @@ class PlayState(gsm: GameStateManager) : State(gsm){
         for (i in 0 until map.size) {
             for (j in 0 until map[i].size) {
                 map[i][j] = Block(i.toFloat(), j.toFloat())
+                //if (j > RightRogue.PIXEL_HEIGHT / 32 / 2) map[i][j] = Block(i.toFloat(), j.toFloat())
             }
         }
         map[0][RightRogue.PIXEL_HEIGHT / 32 / 2] = null

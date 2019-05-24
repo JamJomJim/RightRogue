@@ -9,17 +9,14 @@ import com.badlogic.gdx.math.Vector2
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
+
 //todo add generic entity class
 class Player (x: Float, y: Float){
-    val MAX_VEL = 100f
-    val DAMP = 0.9f
-
     var velocity: Vector2 = Vector2(0f,0f)
     var acceleration: Vector2 = Vector2(0f,0f)
     var texture: Texture = Texture("placeholder.png")
     var sprite = Sprite(texture)
     var rectangle = Rectangle(sprite.x, sprite.y, 30f, 30f)
-
     var grounded = true
 
     init {
@@ -27,65 +24,64 @@ class Player (x: Float, y: Float){
         sprite.y = y * 32
     }
 
-
     //todo add in movement animations
     fun handleInput(state: PlayState, dt: Float){
         //todo separate the input handling and the actual update of player
         //todo change to be scaled values.
+
+        //left and right movement
         when {
-            Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> velocity.x = 500f
-            Gdx.input.isKeyPressed(Input.Keys.LEFT) -> velocity.x = -500f
+            Gdx.input.isKeyPressed(Input.Keys.RIGHT) -> velocity.x = 128f
+            Gdx.input.isKeyPressed(Input.Keys.LEFT) -> velocity.x = -128f
             else -> velocity.x = 0f
         }
 
-
+        //jumping
         if (Gdx.input.isKeyPressed(Input.Keys.UP) and grounded){
-            velocity.y += -12220f
+            velocity.y = -128f
             grounded = false
         }
+        //lengthens jump if you hold down the jump button
         else if (Gdx.input.isKeyPressed(Input.Keys.UP) and !grounded and (velocity.y < 0)){
-            velocity.y += -1020 * dt
+            acceleration.y += -32f * dt
         }
 
-
-
-        acceleration.y += 1500f * dt
-        velocity.add(acceleration.scl(dt))
-        acceleration.scl(1/dt)
+        //gravity
+        acceleration.y += 360f * dt
 
         //if the player velocity is higher/lower than the max/min, set it to the max/min.
-        if (velocity.x > MAX_VEL) velocity.x = MAX_VEL
-        if (velocity.x < -MAX_VEL) velocity.x = -MAX_VEL
-        if (velocity.y > MAX_VEL) velocity.y = MAX_VEL
-        if (velocity.y < -MAX_VEL) velocity.y = -MAX_VEL
+        if (velocity.x > RightRogue.MAX_VEL) velocity.x = RightRogue.MAX_VEL
+        if (velocity.x < -RightRogue.MAX_VEL) velocity.x = -RightRogue.MAX_VEL
+        if (velocity.y > RightRogue.MAX_VEL) velocity.y = RightRogue.MAX_VEL
+        if (velocity.y < -RightRogue.MAX_VEL) velocity.y = -RightRogue.MAX_VEL
 
+        //scales the velocity and acceleration based on the elapsed time
+        velocity.add(acceleration.scl(dt))
+        acceleration.scl(1/dt)
         velocity.scl(dt)
 
-        //if the player is going to collide with something, set its velocity to 0
-        //need to change this so that it moves the player as far as they can go, and then set the velocity to 0.
-        if (this.sprite.x + this.velocity.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2
-                || state.entityCollides(this.velocity.x, 0f))
-            this.velocity.x = 0f
+        //Checks collisions, and moves if possible.
+        //if the player is going to collide with something, don't move, and set its velocity to 0.
+        //todo need to change this so that if there is a collision, it moves the player as far as they can go, and then sets their velocity to 0.
+        if (sprite.x + velocity.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2
+                || state.entityCollides(velocity.x, 0f))
+            velocity.x = 0f
+        else sprite.x += velocity.x
 
-        else this.sprite.x += this.velocity.x
 
+        if (state.entityCollides(0f, velocity.y)) {
+            if (velocity.y > 0)
+                grounded = true
 
-        if (state.entityCollides(0f, this.velocity.y)) {
-            if (this.velocity.y > 0)
-                this.grounded = true
-
-            this.acceleration.y = 0f
-            this.velocity.y = 0f
+            acceleration.y = 0f
+            velocity.y = 0f
         }
-        else this.sprite.y += this.velocity.y
+        else sprite.y += velocity.y
 
-        this.rectangle.x = this.sprite.x + 1
-        this.rectangle.y = this.sprite.y + 1
+        rectangle.x = sprite.x + 1
+        rectangle.y = sprite.y + 1
 
-        this.velocity.scl(this.DAMP/dt)
-
-
-
+        velocity.scl(1/dt)
     }
 
     fun update(dt: Float){
