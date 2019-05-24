@@ -5,8 +5,13 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.MathUtils.random
 import com.rightrogue.game.states.MenuState
 import com.rightrogue.game.states.PlayState
+
+fun rand(from: Int, to: Int) : Int {
+    return random.nextInt(to - from + 1) + from
+}
 
 class RightRogue : ApplicationAdapter() {
     companion object {
