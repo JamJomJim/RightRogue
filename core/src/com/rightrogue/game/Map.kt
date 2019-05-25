@@ -3,13 +3,13 @@ package com.rightrogue.game
 import com.rightrogue.game.sprites.Block
 
 class Map(width: Int, height: Int) {
-    var layout = MutableList(RightRogue.PIXEL_WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()}
+    var layout = MutableList(width) {arrayOfNulls<Block>(height).toMutableList()}
 
     init {
         newMap()
     }
 
-    fun newMap(){
+    private fun newMap(){
         for (i in 0 until layout.size) {
             for (j in 0 until layout[i].size) {
                 layout[i][j] = Block(i.toFloat(), j.toFloat())

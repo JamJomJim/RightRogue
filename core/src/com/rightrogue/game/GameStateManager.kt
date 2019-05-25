@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.rightrogue.game.states.State
 import java.util.Stack
 
-
-
 class GameStateManager(game: RightRogue){
     var game : RightRogue
         private set

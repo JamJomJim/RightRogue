@@ -12,12 +12,12 @@ import com.rightrogue.game.states.PlayState
 
 //todo add generic entity class
 class Player (x: Float, y: Float){
-    var velocity: Vector2 = Vector2(0f,0f)
-    var acceleration: Vector2 = Vector2(0f,0f)
-    var texture: Texture = Texture("placeholder.png")
+    private var velocity: Vector2 = Vector2(0f,0f)
+    private var acceleration: Vector2 = Vector2(0f,0f)
+    private var texture: Texture = Texture("placeholder.png")
     var sprite = Sprite(texture)
     var rectangle = Rectangle(sprite.x, sprite.y, 30f, 30f)
-    var grounded = true
+    private var grounded = true
 
     init {
         sprite.x = x * 32
@@ -47,7 +47,7 @@ class Player (x: Float, y: Float){
         }
 
         //gravity
-        acceleration.y += 360f * dt
+        acceleration.y += 1440f * dt
 
         //if the player velocity is higher/lower than the max/min, set it to the max/min.
         if (velocity.x > RightRogue.MAX_VEL) velocity.x = RightRogue.MAX_VEL
@@ -63,21 +63,43 @@ class Player (x: Float, y: Float){
         //Checks collisions, and moves if possible.
         //if the player is going to collide with something, don't move, and set its velocity to 0.
         //todo need to change this so that if there is a collision, it moves the player as far as they can go, and then sets their velocity to 0.
-        if (sprite.x + velocity.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2
-                || state.entityCollides(velocity.x, 0f))
-            velocity.x = 0f
-        else sprite.x += velocity.x
 
-
-        if (state.entityCollides(0f, velocity.y)) {
-            if (velocity.y > 0)
+        val verticalCollision = state.entityCollides(this, 0f, velocity.y)
+        when{
+            verticalCollision.first == "top" -> {
+                acceleration.y = 0f
+                velocity.y = 0f
+            }
+            verticalCollision.first == "bottom" -> {
                 grounded = true
+                acceleration.y = 0f
+                velocity.y = 0f
+                //non-null asserted because we can only collide if there is something to collide with.
+                //this is necessary, because in the result that there isn't a collision, null is returned for the second object in the pair.
+              //  println("1: " + (verticalCollision.second!!.y - rectangle.y))
 
-            acceleration.y = 0f
-            velocity.y = 0f
+                //println("2: " + (verticalCollision.second!!.y - rectangle.y))
+            }
+            else -> sprite.y += velocity.y
         }
-        else sprite.y += velocity.y
+        val horizontalCollision = state.entityCollides(this, velocity.x, 0f)
 
+
+
+        //controls collision responses
+        when {
+            horizontalCollision.first == "left" -> {
+                acceleration.x = 0f
+                velocity.x = 0f
+            }
+            horizontalCollision.first == "right" -> {
+                acceleration.x = 0f
+                velocity.x = 0f
+            }
+            else -> sprite.x += velocity.x
+        }
+
+        //sets the player rectangle's bounds to the sprite's bounds less one due to the slightly different sizes.
         rectangle.x = sprite.x + 1
         rectangle.y = sprite.y + 1
 
