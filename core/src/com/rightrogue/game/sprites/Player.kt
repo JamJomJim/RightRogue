@@ -16,10 +16,12 @@ class Player (x: Float, y: Float){
     private var acceleration: Vector2 = Vector2(0f,0f)
     private var texture: Texture = Texture("placeholder.png")
     var sprite = Sprite(texture)
-    var rectangle = Rectangle(sprite.x, sprite.y, 30f, 30f)
+    var rectangle = Rectangle(sprite.x, sprite.y, 32f, 32f)
     private var grounded = true
 
     init {
+        rectangle.x = x * 32
+        rectangle.y = y * 32
         sprite.x = x * 32
         sprite.y = y * 32
     }
@@ -60,48 +62,44 @@ class Player (x: Float, y: Float){
         acceleration.scl(1/dt)
         velocity.scl(dt)
 
-        //Checks collisions, and moves if possible.
-        //if the player is going to collide with something, don't move, and set its velocity to 0.
-        //todo need to change this so that if there is a collision, it moves the player as far as they can go, and then sets their velocity to 0.
-
-        val verticalCollision = state.entityCollides(this, 0f, velocity.y)
-        when{
-            verticalCollision.first == "top" -> {
-                acceleration.y = 0f
-                velocity.y = 0f
+        //Checks collisions
+        //adds the player's velocity to their position, then checks to see if that moved them into a block. If it did, then it moves them to the edge of the block.
+        rectangle.y += velocity.y
+        for ( i in 0..4 ){
+            for ( j in 0 until state.map.layout[i].size) {
+                if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
+                    if (velocity.y > 0) {
+                        grounded = true
+                        rectangle.y = state.map.layout[i][j]!!.rectangle.y - 32f
+                    }
+                    else rectangle.y = state.map.layout[i][j]!!.rectangle.y + 32f
+                    velocity.y = 0f
+                    acceleration.y = 0f
+                }
             }
-            verticalCollision.first == "bottom" -> {
-                grounded = true
-                acceleration.y = 0f
-                velocity.y = 0f
-                //non-null asserted because we can only collide if there is something to collide with.
-                //this is necessary, because in the result that there isn't a collision, null is returned for the second object in the pair.
-              //  println("1: " + (verticalCollision.second!!.y - rectangle.y))
-
-                //println("2: " + (verticalCollision.second!!.y - rectangle.y))
-            }
-            else -> sprite.y += velocity.y
-        }
-        val horizontalCollision = state.entityCollides(this, velocity.x, 0f)
-
-
-
-        //controls collision responses
-        when {
-            horizontalCollision.first == "left" -> {
-                acceleration.x = 0f
-                velocity.x = 0f
-            }
-            horizontalCollision.first == "right" -> {
-                acceleration.x = 0f
-                velocity.x = 0f
-            }
-            else -> sprite.x += velocity.x
         }
 
-        //sets the player rectangle's bounds to the sprite's bounds less one due to the slightly different sizes.
-        rectangle.x = sprite.x + 1
-        rectangle.y = sprite.y + 1
+        rectangle.x += velocity.x
+        for ( i in 0..4 ){
+            for ( j in 0 until state.map.layout[i].size) {
+                if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
+                    if (velocity.x > 0) {
+                        rectangle.x = state.map.layout[i][j]!!.rectangle.x - 32f
+                    }
+                    else rectangle.x = state.map.layout[i][j]!!.rectangle.x + 32f
+                    velocity.x = 0f
+                    acceleration.x = 0f
+                }
+            }
+        }
+
+        //prevents the player from going off of the screen to the left.
+        if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
+
+
+        //sets the player's sprite's location to the player's rectangle's location.
+        sprite.x = rectangle.x
+        sprite.y = rectangle.y
 
         velocity.scl(1/dt)
     }
