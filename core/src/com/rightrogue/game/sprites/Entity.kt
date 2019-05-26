@@ -8,6 +8,7 @@ import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
 abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, texture : Texture = Texture("placeholder.png")) {
+    var health: Int = 10
     var velocity: Vector2 = Vector2(0f,0f)
     var acceleration: Vector2 = Vector2(0f,0f)
     var sprite = Sprite(texture)
@@ -68,7 +69,11 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
         }
 
         //prevents the player from going off of the screen to the left.
-        if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
+        if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) {
+            if ( this is Player ) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
+            else this.health = -1
+
+        }
 
         //sets the player's sprite's location to the player's rectangle's location.
         sprite.x = rectangle.x
