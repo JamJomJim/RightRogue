@@ -7,7 +7,7 @@ import java.util.Stack
 class GameStateManager(game: RightRogue){
     var game : RightRogue
         private set
-    var states : Stack<State>
+    private var states : Stack<State>
 
     init{
         this.game = game

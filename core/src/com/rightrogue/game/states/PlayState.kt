@@ -20,6 +20,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private var distanceCompleted = 0
 
     init {
+        enemies.add(Enemy(2f, 8f, 16f, 24f, Texture("enemy.png")))
         cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
     }
 
@@ -50,7 +51,11 @@ class PlayState(private var gsm: GameStateManager) : State(){
             cam.update()
         }
 
-        player.update(this, dt)
+        for ( enemy in enemies ) {
+            enemy.update(this, dt)
+        }
+        player.update(this, enemies, dt)
+
     }
 
     override fun render(sb: SpriteBatch) {

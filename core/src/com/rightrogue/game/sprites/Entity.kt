@@ -39,7 +39,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
         //Checks collisions
         //adds the player's velocity to their position, then checks to see if that moved them into a block. If it did, then it moves them to the edge of the block.
         rectangle.y += velocity.y
-        for ( i in 0..4 ){
+        for ( i in 0 until state.map.layout.size ){
             for ( j in 0 until state.map.layout[i].size) {
                 if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
                     if (velocity.y > 0) {
@@ -54,7 +54,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
         }
 
         rectangle.x += velocity.x
-        for ( i in 0..4 ){
+        for ( i in 0 until state.map.layout.size ){
             for ( j in 0 until state.map.layout[i].size) {
                 if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
                     if (velocity.x > 0) {

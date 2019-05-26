@@ -24,14 +24,12 @@ class RightRogue : ApplicationAdapter() {
 
 
     lateinit var batch: SpriteBatch
-    private lateinit var block: Texture
     lateinit var gsm: GameStateManager
 
 
     override fun create() {
         gsm = GameStateManager(this)
         batch = SpriteBatch()
-        block = Texture("block32.png")
         gsm.pushState(MenuState(gsm))
 
     }
@@ -45,6 +43,5 @@ class RightRogue : ApplicationAdapter() {
 
     override fun dispose() {
         batch.dispose()
-        block.dispose()
     }
 }
