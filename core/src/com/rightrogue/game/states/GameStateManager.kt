@@ -1,7 +1,7 @@
-package com.rightrogue.game
+package com.rightrogue.game.states
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.rightrogue.game.states.State
+import com.rightrogue.game.RightRogue
 import java.util.Stack
 
 class GameStateManager(game: RightRogue){

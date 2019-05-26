@@ -13,7 +13,6 @@ class Map(width: Int, height: Int) {
         for (i in 0 until layout.size) {
             for (j in 0 until layout[i].size) {
                 layout[i][j] = Block(i.toFloat(), j.toFloat())
-                //if (j > RightRogue.PIXEL_HEIGHT / 32 / 2) map[i][j] = Block(i.toFloat(), j.toFloat())
             }
         }
         layout[0][RightRogue.PIXEL_HEIGHT / 32 / 2] = null

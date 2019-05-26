@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils.random
+import com.rightrogue.game.states.GameStateManager
 import com.rightrogue.game.states.MenuState
 
 fun rand(from: Int, to: Int) : Int {

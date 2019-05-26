@@ -10,10 +10,6 @@ class Block (x: Float, y: Float){
     var texture = Texture("block32.png")
     var rectangle = Rectangle(position.x, position.y, 32f, 32f)
 
-    fun update(dt: Float){
-
-    }
-
     fun draw(sb: SpriteBatch){
         sb.draw(texture, position.x, position.y)
     }
