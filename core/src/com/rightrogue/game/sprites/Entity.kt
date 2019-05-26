@@ -16,9 +16,9 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
 
     init {
         rectangle.x = xPos * 32
-        rectangle.y = yPos * 32
-        sprite.x = xPos * 32
-        sprite.y = yPos * 32
+        rectangle.y = yPos * 32 + 32 - rectangle.height
+        sprite.x = rectangle.x
+        sprite.y = rectangle.y
     }
 
     fun handleMovement(state: PlayState, dt: Float){
