@@ -3,28 +3,11 @@ package com.rightrogue.game.sprites
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Sprite
-import com.badlogic.gdx.math.Rectangle
-import com.badlogic.gdx.math.Vector2
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
 
-//todo add generic entity class
-class Player (x: Float, y: Float){
-    private var velocity: Vector2 = Vector2(0f,0f)
-    private var acceleration: Vector2 = Vector2(0f,0f)
-    private var texture: Texture = Texture("placeholder.png")
-    var sprite = Sprite(texture)
-    var rectangle = Rectangle(sprite.x, sprite.y, 32f, 32f)
-    private var grounded = true
-
-    init {
-        rectangle.x = x * 32
-        rectangle.y = y * 32
-        sprite.x = x * 32
-        sprite.y = y * 32
-    }
+class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Texture) : Entity(xPos, yPos, width, height, texture){
 
     //todo add in movement animations
     fun handleInput(state: PlayState, dt: Float){
@@ -70,9 +53,9 @@ class Player (x: Float, y: Float){
                 if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
                     if (velocity.y > 0) {
                         grounded = true
-                        rectangle.y = state.map.layout[i][j]!!.rectangle.y - 32f
+                        rectangle.y = state.map.layout[i][j]!!.rectangle.y - rectangle.height
                     }
-                    else rectangle.y = state.map.layout[i][j]!!.rectangle.y + 32f
+                    else rectangle.y = state.map.layout[i][j]!!.rectangle.y + state.map.layout[i][j]!!.rectangle.height
                     velocity.y = 0f
                     acceleration.y = 0f
                 }
@@ -84,9 +67,9 @@ class Player (x: Float, y: Float){
             for ( j in 0 until state.map.layout[i].size) {
                 if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
                     if (velocity.x > 0) {
-                        rectangle.x = state.map.layout[i][j]!!.rectangle.x - 32f
+                        rectangle.x = state.map.layout[i][j]!!.rectangle.x - rectangle.width
                     }
-                    else rectangle.x = state.map.layout[i][j]!!.rectangle.x + 32f
+                    else rectangle.x = state.map.layout[i][j]!!.rectangle.x + state.map.layout[i][j]!!.rectangle.width
                     velocity.x = 0f
                     acceleration.x = 0f
                 }

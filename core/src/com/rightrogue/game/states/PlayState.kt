@@ -1,5 +1,6 @@
 package com.rightrogue.game.states
 
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.rightrogue.game.GameStateManager
@@ -13,7 +14,7 @@ class PlayState(gsm: GameStateManager) : State(){
 //todo https://gist.github.com/williamahartman/5584f037ed2748f57432 use this to figure out how to add distance to top right
     //var map = MutableList(RightRogue.PIXEL_WIDTH /32 + 2) {arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT /32).toMutableList()}
     var map = Map(RightRogue.PIXEL_WIDTH /32 + 2, RightRogue.PIXEL_HEIGHT /32)
-    private var player: Player = Player(3f, 8f )
+    private var player: Player = Player(3f, 8f, 16f, 24f, Texture("player.png") )
     private var distanceCompleted = 0
     private var temp = 0
 
