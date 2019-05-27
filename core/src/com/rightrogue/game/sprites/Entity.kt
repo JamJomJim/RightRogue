@@ -68,11 +68,13 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
             }
         }
 
-        //prevents the player from going off of the screen to the left.
-        if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) {
-            if ( this is Player ) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
-            else this.health = -1
+        //prevents the entity from going off of the screen to the left.
+        if (this is Player && rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) {
+            rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
 
+        }
+        else if ( rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f - this.rectangle.width) {
+            this.health = -1
         }
 
         //sets the player's sprite's location to the player's rectangle's location.

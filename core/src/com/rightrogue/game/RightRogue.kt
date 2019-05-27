@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils.random
 import com.rightrogue.game.states.GameStateManager
 import com.rightrogue.game.states.MenuState
 import com.rightrogue.game.states.PauseState
+import com.rightrogue.game.states.PlayState
 
 fun rand(from: Int, to: Int) : Int {
     return random.nextInt(to - from + 1) + from
@@ -47,7 +48,7 @@ class RightRogue : ApplicationAdapter() {
     }
 
     override fun pause() {
-        gsm.pushState(PauseState(gsm))
+        if (gsm.currentState() is PlayState) gsm.pushState(PauseState(gsm))
         super.pause()
     }
 

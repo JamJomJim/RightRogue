@@ -2,45 +2,70 @@ package com.rightrogue.game.states
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.rightrogue.game.Map
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.rand
 import com.rightrogue.game.sprites.Enemy
 import com.rightrogue.game.sprites.Player
-
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 
 class PlayState(private var gsm: GameStateManager) : State(){
 
-//todo https://gist.github.com/williamahartman/5584f037ed2748f57432 use this to figure out how to add distance to top right
-    var map = Map(RightRogue.PIXEL_WIDTH /32 + 2, RightRogue.PIXEL_HEIGHT /32)
-    private var player: Player = Player(3f, 8f, 16f, 24f, Texture("player.png") )
-    private var enemies = mutableListOf<Enemy>()
+    private val stage = Stage(ExtendViewport(RightRogue.PIXEL_WIDTH.toFloat(), RightRogue.PIXEL_HEIGHT.toFloat()), gsm.game.batch)
+    private val labelStyle = LabelStyle()
     private val skin = Skin()
-    private val glyphLayout = GlyphLayout()
-    private var distanceCompleted = 0
+    private val distLabel : Label
+
+    var map = Map(RightRogue.PIXEL_WIDTH /32 + 2, RightRogue.PIXEL_HEIGHT /32)
+
+    private var player : Player = Player(3f, 8f, 16f, 24f, Texture("player.png") )
+    private var enemies = mutableListOf<Enemy>()
+
+    private var distanceCompleted = 2
 
     init {
-        skin.add("LS90", BitmapFont(Gdx.files.internal("fonts/LS90.fnt"), true))
-        skin.getFont("LS90").data.setScale(.5f)
+
+        skin.add("LS90", BitmapFont(Gdx.files.internal("fonts/LS90.fnt")))
+        skin.getFont("LS90").data.setScale(0.5f)
+        labelStyle.font = skin.getFont("LS90")
+
+        labelStyle.fontColor = Color.WHITE
+        skin.add("LS90", labelStyle)
+        distLabel = Label("Play", skin, "LS90")
+
+        val table = Table()
+        table.debug = true
+        table.setFillParent(true)
+        table.right().top()
+
+        table.add(distLabel)
+        stage.addActor(table)
 
         enemies.add(Enemy(2f, 8f, 16f, 24f, Texture("enemy.png")))
         cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
     }
 
     override fun handleInput(dt: Float) {
+
+        //pauses the game if ESC is pressed
         if ( Gdx.input.isKeyPressed(Input.Keys.ESCAPE) ) {
             gsm.pushState(PauseState(gsm))
         }
+
         player.handleInput(dt)
     }
 
     override fun update(dt: Float) {
-
+        stage.act(dt)
         handleInput(dt)
         //updates the map when the player has gone far enough right.
         if (player.sprite.x.toInt() / 32 > distanceCompleted && player.sprite.x / 32 > 3) {
@@ -74,26 +99,28 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
         player.update(this, enemies, dt)
 
-        println(enemies)
     }
 
     override fun render(sb: SpriteBatch) {
+        //todo use scene2d label class to display distance completed
         sb.projectionMatrix = cam.combined
         sb.begin()
-
 
         //draws all of the non-null blocks in map
         map.layout.flatMap{ it.toList() }
                 .filterNotNull()
                 .forEach { it.draw(sb) }
 
+        //draws the player and enemies
         sb.draw(player.sprite.texture, player.sprite.x, player.sprite.y)
         for ( enemy in enemies ) {
             sb.draw(enemy.sprite.texture, enemy.sprite.x, enemy.sprite.y)
         }
-        glyphLayout.setText(skin.getFont("LS90"), "Distance Completed: $distanceCompleted")
-        skin.getFont("LS90").draw(sb, glyphLayout,cam.position.x + RightRogue.PIXEL_WIDTH / 2 - glyphLayout.width, 32f)
+
         sb.end()
 
+        //updates the distance completed label
+        distLabel.setText("Distance Complete: $distanceCompleted")
+        stage.draw()
     }
 }

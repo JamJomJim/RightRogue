@@ -26,7 +26,7 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         velocity.scl(dt)
 
         //Checks collisions
-        //adds the player's velocity to their position, then checks to see if that moved them into a block. If it did, then it moves them to the edge of the block.
+        //adds the player's velocity to their position, then checks to see if that moved them into a block/enemy. If it did, then it moves them to the edge of the block/enemy.
         rectangle.y += velocity.y
         for ( i in 0 until state.map.layout.size ){
             for ( j in 0 until state.map.layout[i].size) {

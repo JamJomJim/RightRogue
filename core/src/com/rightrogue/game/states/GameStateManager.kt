@@ -35,4 +35,8 @@ class GameStateManager(game: RightRogue){
         states.pop()
         states.push(state)
     }
+
+    fun currentState() : State{
+        return states.peek()
+    }
 }
