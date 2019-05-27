@@ -7,7 +7,7 @@ class Enemy(xPos: Float, yPos: Float, width: Float, height: Float, texture: Text
     fun handleInput(dt: Float){
 
     }
-    fun update(state: PlayState, dt: Float){
+    override fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float){
         handleMovement(state, dt)
     }
 }

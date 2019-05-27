@@ -3,14 +3,32 @@ package com.rightrogue.game.sprites
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Rectangle
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
 
 class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Texture) : Entity(xPos, yPos, width, height, texture){
 
+    var attacking = false
+    var attackCooldown = 1f
+
     //todo add in movement animations
-    private fun handlePlayerMovement(state: PlayState, enemies: MutableList<Enemy>, dt: Float){
+    private fun attack(entity: Entity, enemies : MutableList<Entity>){
+        println("attacking")
+        attackCooldown = 0f
+        val hitbox = Rectangle(entity.rectangle)
+        hitbox.width += 32
+        for ( enemy in enemies ) {
+            if ( hitbox.overlaps(enemy.rectangle)) {
+                enemy.health -= 5
+                println("hit")
+                break
+            }
+        }
+        attacking = false
+    }
+    private fun handlePlayerMovement(state: PlayState, enemies: MutableList<Entity>, dt: Float){
         //gravity
         acceleration.y += 1440f * dt
 
@@ -89,6 +107,10 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
 
     fun handleInput(dt: Float){
 
+        if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) && attackCooldown >= 1)){
+            attacking = true
+        }
+
         //left and right movement
         when {
             Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)-> velocity.x = 128f
@@ -107,7 +129,11 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
             acceleration.y += -960f * dt
     }
 
-    fun update(state: PlayState, enemies : MutableList<Enemy>, dt: Float){
+    override fun update(state: PlayState, enemies : MutableList<Entity>, dt: Float){
         handlePlayerMovement(state, enemies, dt)
+        attackCooldown += dt
+        if ( attacking ) {
+            attack(this, enemies)
+        }
     }
 }

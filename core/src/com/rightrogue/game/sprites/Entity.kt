@@ -22,6 +22,9 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
         sprite.y = rectangle.y
     }
 
+    abstract fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float)
+
+
     fun handleMovement(state: PlayState, dt: Float){
         //gravity
         acceleration.y += 1440f * dt

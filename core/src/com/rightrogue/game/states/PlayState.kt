@@ -17,6 +17,7 @@ import com.rightrogue.game.rand
 import com.rightrogue.game.sprites.Enemy
 import com.rightrogue.game.sprites.Player
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
+import com.rightrogue.game.sprites.Entity
 
 class PlayState(private var gsm: GameStateManager) : State(){
 
@@ -28,7 +29,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     var map = Map(RightRogue.PIXEL_WIDTH /32 + 2, RightRogue.PIXEL_HEIGHT /32)
 
     private var player : Player = Player(3f, 8f, 16f, 24f, Texture("player.png") )
-    private var enemies = mutableListOf<Enemy>()
+    var enemies = mutableListOf<Entity>()
 
     private var distanceCompleted = 2
 
@@ -50,7 +51,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         table.add(distLabel)
         stage.addActor(table)
 
-        enemies.add(Enemy(2f, 8f, 16f, 24f, Texture("enemy.png")))
+        enemies.add(Enemy(4f, 8f, 16f, 24f, Texture("enemy.png")))
         cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
     }
 
@@ -86,7 +87,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
 
         for ( enemy in enemies ) {
-            enemy.update(this, dt)
+            enemy.update(this, enemies, dt)
         }
 
         //removes enemies from the game once their health is 0
@@ -102,7 +103,6 @@ class PlayState(private var gsm: GameStateManager) : State(){
     }
 
     override fun render(sb: SpriteBatch) {
-        //todo use scene2d label class to display distance completed
         sb.projectionMatrix = cam.combined
         sb.begin()
 
@@ -120,7 +120,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         sb.end()
 
         //updates the distance completed label
-        distLabel.setText("Distance Complete: $distanceCompleted")
+        distLabel.setText("Distance Completed: $distanceCompleted")
         stage.draw()
     }
 }
