@@ -123,4 +123,8 @@ class PlayState(private var gsm: GameStateManager) : State(){
         distLabel.setText("Distance Completed: $distanceCompleted")
         stage.draw()
     }
+
+    override fun dispose() {
+        stage.dispose()
+    }
 }

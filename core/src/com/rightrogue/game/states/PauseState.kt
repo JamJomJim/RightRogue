@@ -67,4 +67,8 @@ class PauseState(gsm: GameStateManager) : State() {
     override fun render(sb: SpriteBatch) {
         stage.draw()
     }
+
+    override fun dispose() {
+        stage.dispose()
+    }
 }

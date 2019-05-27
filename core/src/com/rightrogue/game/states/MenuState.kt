@@ -61,4 +61,8 @@ class MenuState(gsm: GameStateManager) : State(){
         stage.draw()
     }
 
+    override fun dispose() {
+        stage.dispose()
+    }
+
 }

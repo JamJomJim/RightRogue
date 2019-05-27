@@ -28,10 +28,12 @@ class GameStateManager(game: RightRogue){
     }
 
     fun popState() {
+        states.peek().dispose()
         states.pop()
     }
 
     fun setState (state : State){
+        states.peek().dispose()
         states.pop()
         states.push(state)
     }

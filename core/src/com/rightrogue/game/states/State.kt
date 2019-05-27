@@ -10,4 +10,5 @@ abstract class State {
     abstract fun handleInput(dt: Float)
     abstract fun update(dt: Float)
     abstract fun render(sb: SpriteBatch)
+    abstract fun dispose()
 }
