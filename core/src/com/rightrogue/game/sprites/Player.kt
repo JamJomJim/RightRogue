@@ -2,23 +2,22 @@ package com.rightrogue.game.sprites
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
 
-class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Texture) : Entity(xPos, yPos, width, height, texture){
+class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: TextureRegion) : Entity(xPos, yPos, width, height, texture){
 
     var attacking = false
     var attackCooldown = 1f
 
-    //todo add in movement animations
+    //todo add in movement and attack animations
     private fun attack(entity: Entity, enemies : MutableList<Entity>){
         println("attacking")
         attackCooldown = 0f
-        val hitbox = Rectangle(entity.rectangle)
-        hitbox.width += 32
+        val hitbox = Rectangle(entity.rectangle.x, entity.rectangle.y - 8, entity.rectangle.width + 16, entity.rectangle.height + 16)
         for ( enemy in enemies ) {
             if ( hitbox.overlaps(enemy.rectangle)) {
                 enemy.health -= 5
@@ -75,6 +74,10 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         for ( i in 0 until state.map.layout.size ){
             for ( j in 0 until state.map.layout[i].size) {
                 if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
+                    if ( velocity.y > 0 ) {
+                        grounded = true
+                        acceleration.y = 0f
+                    }
                     if (velocity.x > 0) {
                         rectangle.x = state.map.layout[i][j]!!.rectangle.x - rectangle.width
                     }
@@ -107,7 +110,7 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
 
     fun handleInput(dt: Float){
 
-        if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) && attackCooldown >= 1)){
+        if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) && attackCooldown >= 0.5)){
             attacking = true
         }
 

@@ -18,10 +18,11 @@ class RightRogue : ApplicationAdapter() {
 
     companion object {
         const val MAX_VEL = 256f
-        const val PIXEL_WIDTH: Int = 1024
-        const val PIXEL_HEIGHT: Int = 512
-        const val BLOCK_WIDTH = PIXEL_WIDTH / 32
-        const val BLOCK_HEIGHT = PIXEL_HEIGHT / 32
+        const val PIXEL_WIDTH: Int = 960
+        const val PIXEL_HEIGHT: Int = 480
+        const val PIXELS_PER_BLOCK = 48
+        const val BLOCK_WIDTH = PIXEL_WIDTH / PIXELS_PER_BLOCK
+        const val BLOCK_HEIGHT = PIXEL_HEIGHT / PIXELS_PER_BLOCK
     }
 
 

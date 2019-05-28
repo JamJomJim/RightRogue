@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -26,14 +27,23 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private val skin = Skin()
     private val distLabel : Label
 
-    var map = Map(RightRogue.PIXEL_WIDTH /32 + 2, RightRogue.PIXEL_HEIGHT /32)
+    var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
+    var spriteSheet = Texture("tileset32.png")
+    var textures = TextureRegion.split(spriteSheet, 32, 32)
 
-    private var player : Player = Player(3f, 8f, 16f, 24f, Texture("player.png") )
+    private var player : Player
     var enemies = mutableListOf<Entity>()
 
-    private var distanceCompleted = 2
+    val playerTexture = textures[2][0]
+    val enemyTexture = textures[2][1]
+
+    private var distanceCompleted = 0
 
     init {
+        textures[2][0].flip(false, true)
+        player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, playerTexture )
+
+        textures[2][1].flip(false, true)
 
         skin.add("LS90", BitmapFont(Gdx.files.internal("fonts/LS90.fnt")))
         skin.getFont("LS90").data.setScale(0.5f)
@@ -51,7 +61,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         table.add(distLabel)
         stage.addActor(table)
 
-        enemies.add(Enemy(4f, 8f, 16f, 24f, Texture("enemy.png")))
+        enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, enemyTexture))
         cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
     }
 
@@ -69,19 +79,25 @@ class PlayState(private var gsm: GameStateManager) : State(){
         stage.act(dt)
         handleInput(dt)
         //updates the map when the player has gone far enough right.
-        if (player.sprite.x.toInt() / 32 > distanceCompleted && player.sprite.x / 32 > 3) {
-            distanceCompleted = player.sprite.x.toInt() / 32
+
+        if (player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted && player.sprite.x / RightRogue.PIXELS_PER_BLOCK >= 3) {
+            distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
+            println(player.sprite.x.toInt())
+            println(distanceCompleted)
+
             map.updateMap(distanceCompleted)
 
             //has a 1 in 8 chance of spawning an enemy every time more map generates.
             if ( rand(1, 8) == 1)
-                enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / 32f - 1, map.layout.last().indexOfLast { it == null }.toFloat(),16f,24f,Texture("enemy.png")))
+                enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.layout.last().indexOfLast { it == null }.toFloat(),32f,32f, enemyTexture))
             
         }
+        else if ( player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK >= distanceCompleted )
+            distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
 
         //updates the camera to follow the player as they move to the right.
-        if (cam.position.x < player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 64){
-            cam.position.x += player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 64 - cam.position.x
+        if (cam.position.x < player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 2 * RightRogue.PIXELS_PER_BLOCK){
+            cam.position.x += player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 2 * RightRogue.PIXELS_PER_BLOCK - cam.position.x
             cam.update()
         }
 
@@ -112,9 +128,9 @@ class PlayState(private var gsm: GameStateManager) : State(){
                 .forEach { it.draw(sb) }
 
         //draws the player and enemies
-        sb.draw(player.sprite.texture, player.sprite.x, player.sprite.y)
+        sb.draw(player.sprite, player.sprite.x, player.sprite.y)
         for ( enemy in enemies ) {
-            sb.draw(enemy.sprite.texture, enemy.sprite.x, enemy.sprite.y)
+            sb.draw(enemy.sprite, enemy.sprite.x, enemy.sprite.y)
         }
 
         sb.end()

@@ -1,13 +1,13 @@
 package com.rightrogue.game.sprites
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
-abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, texture : Texture = Texture("placeholder.png")) {
+abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, texture : TextureRegion) {
     var health: Int = 10
     var velocity: Vector2 = Vector2(0f,0f)
     var acceleration: Vector2 = Vector2(0f,0f)
@@ -16,8 +16,8 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
     var grounded = true
 
     init {
-        rectangle.x = xPos * 32
-        rectangle.y = yPos * 32 + 32 - rectangle.height
+        rectangle.x = xPos * RightRogue.PIXELS_PER_BLOCK.toFloat()
+        rectangle.y = yPos * RightRogue.PIXELS_PER_BLOCK.toFloat()
         sprite.x = rectangle.x
         sprite.y = rectangle.y
     }
