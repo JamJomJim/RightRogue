@@ -8,4 +8,6 @@ class Enemy(xPos: Float, yPos: Float, width: Float, height: Float, texture: Text
     override fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float){
         handleMovement(state, dt)
     }
+
+
 }

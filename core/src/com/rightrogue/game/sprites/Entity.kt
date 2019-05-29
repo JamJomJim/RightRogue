@@ -1,6 +1,7 @@
 package com.rightrogue.game.sprites
 
 import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
@@ -8,7 +9,8 @@ import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
 abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, texture : TextureRegion) {
-    var health: Int = 10
+    val maxHealth: Int = 10
+    var currentHealth: Int = 10
     var velocity: Vector2 = Vector2(0f,0f)
     var acceleration: Vector2 = Vector2(0f,0f)
     var sprite = Sprite(texture)
@@ -24,6 +26,9 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
 
     abstract fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float)
 
+    fun draw(sb: SpriteBatch) {
+        sb.draw(sprite, sprite.x, sprite.y)
+    }
 
     fun handleMovement(state: PlayState, dt: Float){
         //gravity
@@ -77,7 +82,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
 
         }
         else if ( rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f - this.rectangle.width) {
-            this.health = -1
+            this.currentHealth = -1
         }
 
         //sets the player's sprite's location to the player's rectangle's location.

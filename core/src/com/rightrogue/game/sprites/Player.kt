@@ -20,7 +20,7 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         val hitbox = Rectangle(entity.rectangle.x, entity.rectangle.y - 8, entity.rectangle.width + 16, entity.rectangle.height + 16)
         for ( enemy in enemies ) {
             if ( hitbox.overlaps(enemy.rectangle)) {
-                enemy.health -= 5
+                enemy.currentHealth -= 5
                 println("hit")
                 break
             }
@@ -139,4 +139,6 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
             attack(this, enemies)
         }
     }
+
+
 }

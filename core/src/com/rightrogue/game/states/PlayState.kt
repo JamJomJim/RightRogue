@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -22,22 +23,21 @@ import com.rightrogue.game.sprites.Entity
 
 class PlayState(private var gsm: GameStateManager) : State(){
 
+    private val shapeRenderer = ShapeRenderer()
     private val stage = Stage(ExtendViewport(RightRogue.PIXEL_WIDTH.toFloat(), RightRogue.PIXEL_HEIGHT.toFloat()), gsm.game.batch)
     private val labelStyle = LabelStyle()
     private val skin = Skin()
     private val distLabel : Label
-
-    var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
-    var spriteSheet = Texture("tileset32.png")
-    var textures = TextureRegion.split(spriteSheet, 32, 32)
+    private val spriteSheet = Texture("tileset32.png")
+    private val textures: Array<Array<TextureRegion>> = TextureRegion.split(spriteSheet, 32, 32)
+    private val playerTexture = textures[2][0]
+    private val enemyTexture = textures[2][1]
 
     private var player : Player
-    var enemies = mutableListOf<Entity>()
-
-    val playerTexture = textures[2][0]
-    val enemyTexture = textures[2][1]
-
+    private var enemies = mutableListOf<Entity>()
     private var distanceCompleted = 0
+
+    var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
 
     init {
         textures[2][0].flip(false, true)
@@ -109,7 +109,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         //removes enemies from the game once their health is 0
         val iter = enemies.iterator()
         while (iter.hasNext()) {
-            if ( iter.next().health <= 0 ) {
+            if ( iter.next().currentHealth <= 0 ) {
                 iter.remove()
             }
         }
@@ -128,9 +128,9 @@ class PlayState(private var gsm: GameStateManager) : State(){
                 .forEach { it.draw(sb) }
 
         //draws the player and enemies
-        sb.draw(player.sprite, player.sprite.x, player.sprite.y)
+        player.draw(sb)
         for ( enemy in enemies ) {
-            sb.draw(enemy.sprite, enemy.sprite.x, enemy.sprite.y)
+            enemy.draw(sb)
         }
 
         sb.end()
@@ -138,6 +138,29 @@ class PlayState(private var gsm: GameStateManager) : State(){
         //updates the distance completed label
         distLabel.setText("Distance Completed: $distanceCompleted")
         stage.draw()
+        shapeRenderer.projectionMatrix = cam.combined
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+
+        //Draws the player's health bar
+        shapeRenderer.color = Color.RED
+        shapeRenderer.rect(player.sprite.x + 2, player.sprite.y - 10, (player.sprite.width - 4), 5f)
+        shapeRenderer.color = Color.GREEN
+        shapeRenderer.rect(player.sprite.x + 2, player.sprite.y - 10, (player.currentHealth / player.maxHealth.toFloat() ) * (player.sprite.width - 4), 5f)
+
+        //Draws the enemies' health bar if it isn't full.
+        for ( enemy in enemies ) {
+            if ( enemy.currentHealth != enemy.maxHealth) {
+                shapeRenderer.color = Color.RED
+                shapeRenderer.rect(enemy.sprite.x + 2, enemy.sprite.y - 10, ( enemy.sprite.width - 4 ), 5f)
+                shapeRenderer.color = Color.GREEN
+                shapeRenderer.rect(enemy.sprite.x + 2, enemy.sprite.y - 10, ( enemy.currentHealth / enemy.maxHealth.toFloat() ) * ( enemy.sprite.width - 4 ), 5f)
+            }
+        }
+
+
+
+        shapeRenderer.end()
+
     }
 
     override fun dispose() {
