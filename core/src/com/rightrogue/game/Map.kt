@@ -38,8 +38,6 @@ class Map(width: Int, height: Int) {
     }
 
     fun updateMap(distanceCompleted: Int){
-        println(distanceCompleted)
-
         val newMapPiece = arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK).toMutableList()
 
         for (i in 0 until newMapPiece.size) {

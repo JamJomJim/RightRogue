@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2
 import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
-abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, texture : TextureRegion) {
+abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, texture : TextureRegion){
     val maxHealth: Int = 10
     var currentHealth: Int = 10
     var velocity: Vector2 = Vector2(0f,0f)
@@ -25,10 +25,6 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
     }
 
     abstract fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float)
-
-    fun draw(sb: SpriteBatch) {
-        sb.draw(sprite, sprite.x, sprite.y)
-    }
 
     fun handleMovement(state: PlayState, dt: Float){
         //gravity
@@ -90,5 +86,9 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
         sprite.y = rectangle.y
 
         velocity.scl(1/dt)
+    }
+
+    fun draw(sb: SpriteBatch) {
+        sb.draw(sprite, sprite.x, sprite.y)
     }
 }

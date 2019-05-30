@@ -19,9 +19,7 @@ import com.rightrogue.game.rand
 import com.rightrogue.game.sprites.Enemy
 import com.rightrogue.game.sprites.Player
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
-import com.badlogic.gdx.utils.Logger
 import com.rightrogue.game.sprites.Entity
-
 
 
 class PlayState(private var gsm: GameStateManager) : State(){
@@ -69,36 +67,26 @@ class PlayState(private var gsm: GameStateManager) : State(){
         table.add(distLabel)
         stage.addActor(table)
 
+
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, enemyTexture))
         cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
     }
 
     override fun keyDown(keycode: Int): Boolean {
-        println("Key $keycode")
         if ( keycode == Input.Keys.BACK ) {
             gsm.pushState(PauseState(gsm))
-            return false
+            return true
         }
-        player.handleInput(keycode)
-        return super.keyDown(keycode)
-    }
-
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        println(pointer)
-        return super.touchDown(screenX, screenY, pointer, button)
+        return false
     }
 
     override fun handleInput(dt: Float) {
 
-        //pauses the game if ESC is pressed
-        if ( Gdx.input.isKeyPressed(Input.Keys.ESCAPE) ) {
-            gsm.pushState(PauseState(gsm))
-        }
+
     }
 
     override fun update(dt: Float) {
         stage.act(dt)
-        handleInput(dt)
         //updates the map when the player has gone far enough right.
 
         if (player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted && player.sprite.x / RightRogue.PIXELS_PER_BLOCK >= 3) {
