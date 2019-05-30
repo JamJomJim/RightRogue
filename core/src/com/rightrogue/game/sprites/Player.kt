@@ -15,13 +15,11 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
 
     //todo add in movement and attack animations
     private fun attack(entity: Entity, enemies : MutableList<Entity>){
-        println("attacking")
         attackCooldown = 0f
         val hitbox = Rectangle(entity.rectangle.x, entity.rectangle.y - 8, entity.rectangle.width + 16, entity.rectangle.height + 16)
         for ( enemy in enemies ) {
             if ( hitbox.overlaps(enemy.rectangle)) {
                 enemy.currentHealth -= 5
-                println("hit")
                 break
             }
         }
@@ -108,28 +106,25 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         velocity.scl(1/dt)
     }
 
-    fun handleInput(dt: Float){
+    fun handleInput(keycode: Int){
 
-        if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) && attackCooldown >= 0.5)){
-            attacking = true
-        }
+
 
         //left and right movement
         when {
-            Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)-> velocity.x = 128f
-            Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A) -> velocity.x = -128f
+            keycode == Input.Keys.SPACE && attackCooldown >= 0.5 ->  attacking = true
+            keycode == Input.Keys.RIGHT -> velocity.x = 128f
+            keycode == Input.Keys.LEFT  -> velocity.x = -128f
+            keycode == Input.Keys.UP  && grounded -> {
+                velocity.y = -128f
+                grounded = false
+            }
             else -> velocity.x = 0f
         }
 
-        //jumping
-        if ((Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) && grounded){
-            velocity.y = -128f
-            grounded = false
-        }
-
-        //lengthens jump if you hold down the jump button
-        else if ((Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) && !grounded && velocity.y < 0)
-            acceleration.y += -960f * dt
+//        //lengthens jump if you hold down the jump button
+//        else if ((Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) && !grounded && velocity.y < 0)
+//            acceleration.y += -960f * dt
     }
 
     override fun update(state: PlayState, enemies : MutableList<Entity>, dt: Float){

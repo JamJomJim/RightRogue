@@ -19,7 +19,10 @@ import com.rightrogue.game.rand
 import com.rightrogue.game.sprites.Enemy
 import com.rightrogue.game.sprites.Player
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
+import com.badlogic.gdx.utils.Logger
 import com.rightrogue.game.sprites.Entity
+
+
 
 class PlayState(private var gsm: GameStateManager) : State(){
 
@@ -33,6 +36,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private val playerTexture = textures[2][0]
     private val enemyTexture = textures[2][1]
 
+
     private var player : Player
     private var enemies = mutableListOf<Entity>()
     private var distanceCompleted = 0
@@ -40,6 +44,10 @@ class PlayState(private var gsm: GameStateManager) : State(){
     var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
 
     init {
+
+        Gdx.input.inputProcessor = this
+        Gdx.input.isCatchBackKey = true
+
         textures[2][0].flip(false, true)
         player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, playerTexture )
 
@@ -65,14 +73,27 @@ class PlayState(private var gsm: GameStateManager) : State(){
         cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
     }
 
+    override fun keyDown(keycode: Int): Boolean {
+        println("Key $keycode")
+        if ( keycode == Input.Keys.BACK ) {
+            gsm.pushState(PauseState(gsm))
+            return false
+        }
+        player.handleInput(keycode)
+        return super.keyDown(keycode)
+    }
+
+    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        println(pointer)
+        return super.touchDown(screenX, screenY, pointer, button)
+    }
+
     override fun handleInput(dt: Float) {
 
         //pauses the game if ESC is pressed
         if ( Gdx.input.isKeyPressed(Input.Keys.ESCAPE) ) {
             gsm.pushState(PauseState(gsm))
         }
-
-        player.handleInput(dt)
     }
 
     override fun update(dt: Float) {
@@ -82,8 +103,6 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
         if (player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted && player.sprite.x / RightRogue.PIXELS_PER_BLOCK >= 3) {
             distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
-            println(player.sprite.x.toInt())
-            println(distanceCompleted)
 
             map.updateMap(distanceCompleted)
 

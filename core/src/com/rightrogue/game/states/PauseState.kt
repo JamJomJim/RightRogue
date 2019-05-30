@@ -48,7 +48,6 @@ class PauseState(gsm: GameStateManager) : State() {
         val quitButton = TextButton("Quit", skin)
         quitButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                gsm.popState()
                 gsm.setState(MenuState(gsm))
             }
         })

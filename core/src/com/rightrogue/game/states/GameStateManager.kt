@@ -1,5 +1,6 @@
 package com.rightrogue.game.states
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.rightrogue.game.RightRogue
 import java.util.Stack
@@ -30,6 +31,8 @@ class GameStateManager(game: RightRogue){
     fun popState() {
         states.peek().dispose()
         states.pop()
+        Gdx.input.inputProcessor = states.peek()
+
     }
 
     fun setState (state : State){
