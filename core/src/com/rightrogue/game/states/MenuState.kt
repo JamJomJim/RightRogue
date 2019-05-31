@@ -32,20 +32,21 @@ class MenuState(gsm: GameStateManager) : State(){
         textButtonStyle.downFontColor = Color.GRAY
         skin.add("default", textButtonStyle)
 
-
+        //sets up the table that all of the buttons are sitting in.
         val table = Table()
         table.debug = true
         table.setFillParent(true)
 
-
-        val button = TextButton("Play", skin)
-        button.addListener(object : ClickListener() {
+        //sets up the play button
+        val playButton = TextButton("Play", skin)
+        playButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
                 gsm.setState(PlayState(gsm))
             }
         })
 
-        table.add(button)
+        //adds all of the various buttons to the initial table.
+        table.add(playButton)
         stage.addActor(table)
     }
 

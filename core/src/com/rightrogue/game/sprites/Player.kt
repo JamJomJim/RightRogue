@@ -59,7 +59,6 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         for ( enemy in enemies ) {
             if ( rectangle.overlaps(enemy.rectangle)) {
                 if (velocity.y > 0) {
-                    grounded = true
                     rectangle.y = enemy.rectangle.y - rectangle.height
                 }
                 else rectangle.y = enemy.rectangle.y + enemy.rectangle.height

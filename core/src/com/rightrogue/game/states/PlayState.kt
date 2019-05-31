@@ -34,7 +34,6 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private val playerTexture = textures[2][0]
     private val enemyTexture = textures[2][1]
 
-
     private var player : Player
     private var enemies = mutableListOf<Entity>()
     private var distanceCompleted = 0
@@ -42,36 +41,45 @@ class PlayState(private var gsm: GameStateManager) : State(){
     var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
 
     init {
-
+        //sets this playState as the thing that handles input
         Gdx.input.inputProcessor = this
+        //stops the phone from quitting the app when the back button is pressed by giving the command to the app instead
         Gdx.input.isCatchBackKey = true
 
-        textures[2][0].flip(false, true)
-        player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, playerTexture )
+        //initializes the camera
+        cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
 
+        //rotates the player and default enemy sprite to be the right way up
+        textures[2][0].flip(false, true)
         textures[2][1].flip(false, true)
 
+        //sets up the font used throughout the game
         skin.add("LS90", BitmapFont(Gdx.files.internal("fonts/LS90.fnt")))
         skin.getFont("LS90").data.setScale(0.5f)
         labelStyle.font = skin.getFont("LS90")
-
         labelStyle.fontColor = Color.WHITE
         skin.add("LS90", labelStyle)
-        distLabel = Label("Play", skin, "LS90")
 
+        //sets up the table that all of the UI elements sit in
         val table = Table()
         table.debug = true
         table.setFillParent(true)
         table.right().top()
 
+        //adds the distance completed label to the top right
+        distLabel = Label("Play", skin, "LS90")
         table.add(distLabel)
+
         stage.addActor(table)
 
+        //initializes the player
+        player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, playerTexture )
 
+        //adds an enemy right in front of the player for testing purposes
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, enemyTexture))
-        cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
     }
 
+    //if the back button is pushed, pause the game
     override fun keyDown(keycode: Int): Boolean {
         if ( keycode == Input.Keys.BACK ) {
             gsm.pushState(PauseState(gsm))
@@ -86,20 +94,19 @@ class PlayState(private var gsm: GameStateManager) : State(){
     }
 
     override fun update(dt: Float) {
+        //not sure this does anything since nothing within the stage moves?
         stage.act(dt)
         //updates the map when the player has gone far enough right.
-
         if (player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted && player.sprite.x / RightRogue.PIXELS_PER_BLOCK >= 3) {
             distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
-
             map.updateMap(distanceCompleted)
-
             //has a 1 in 8 chance of spawning an enemy every time more map generates.
             if ( rand(1, 8) == 1)
                 enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.layout.last().indexOfLast { it == null }.toFloat(),32f,32f, enemyTexture))
-            
         }
-        else if ( player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK >= distanceCompleted )
+
+        //updates distance completed.
+        else if ( player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted )
             distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
 
         //updates the camera to follow the player as they move to the right.
@@ -108,21 +115,19 @@ class PlayState(private var gsm: GameStateManager) : State(){
             cam.update()
         }
 
-
+        //updates the player and enemies
+        player.update(this, enemies, dt)
         for ( enemy in enemies ) {
             enemy.update(this, enemies, dt)
         }
 
-        //removes enemies from the game once their health is 0
+        //removes enemies from the game if their health is 0
         val iter = enemies.iterator()
         while (iter.hasNext()) {
             if ( iter.next().currentHealth <= 0 ) {
                 iter.remove()
             }
         }
-
-        player.update(this, enemies, dt)
-
     }
 
     override fun render(sb: SpriteBatch) {
@@ -163,11 +168,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
                 shapeRenderer.rect(enemy.sprite.x + 2, enemy.sprite.y - 10, ( enemy.currentHealth / enemy.maxHealth.toFloat() ) * ( enemy.sprite.width - 4 ), 5f)
             }
         }
-
-
-
         shapeRenderer.end()
-
     }
 
     override fun dispose() {

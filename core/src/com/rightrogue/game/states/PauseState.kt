@@ -31,7 +31,6 @@ class PauseState(gsm: GameStateManager) : State() {
         textButtonStyle.downFontColor = Color.GRAY
         skin.add("default", textButtonStyle)
 
-
         val table = Table()
         table.debug = true
         table.setFillParent(true)
@@ -56,7 +55,7 @@ class PauseState(gsm: GameStateManager) : State() {
         stage.addActor(table)
     }
     override fun handleInput(dt: Float) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun update(dt: Float) {
