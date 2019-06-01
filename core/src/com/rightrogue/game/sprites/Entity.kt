@@ -16,6 +16,11 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
     var sprite = Sprite(texture)
     var rectangle = Rectangle(sprite.x, sprite.y, width, height)
     var grounded = true
+    var attackDamage = 1
+    var attackRange = 16
+    var attacking = false
+    var attackCooldown = 1f
+    var attackDelay = 0f
 
     init {
         rectangle.x = xPos * RightRogue.PIXELS_PER_BLOCK.toFloat()
@@ -25,6 +30,20 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
     }
 
     abstract fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float)
+
+    fun attack(entity: Entity, enemies : MutableList<Entity>){
+        attackCooldown = 0f
+        attackDelay = 0f
+        println("attack")
+        val hitbox = Rectangle(entity.rectangle.x, entity.rectangle.y - 8, entity.rectangle.width + attackRange, entity.rectangle.height + attackRange)
+        for ( enemy in enemies ) {
+            if ( hitbox.overlaps(enemy.rectangle)) {
+                enemy.currentHealth -= attackDamage
+                break
+            }
+        }
+        attacking = false
+    }
 
     fun handleMovement(state: PlayState, enemies: MutableList<Entity>, dt: Float){
         //gravity

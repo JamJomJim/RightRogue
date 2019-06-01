@@ -2,29 +2,13 @@ package com.rightrogue.game.sprites
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.math.Rectangle
 import com.rightrogue.game.states.PlayState
 import kotlin.math.absoluteValue
 
 
 class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: TextureRegion) : Entity(xPos, yPos, width, height, texture){
 
-    private var attacking = false
-    private var attackCooldown = 1f
-
     //todo add in movement and attack animations
-    private fun attack(entity: Entity, enemies : MutableList<Entity>){
-        attackCooldown = 0f
-        val hitbox = Rectangle(entity.rectangle.x, entity.rectangle.y - 8, entity.rectangle.width + 16, entity.rectangle.height + 16)
-        for ( enemy in enemies ) {
-            if ( hitbox.overlaps(enemy.rectangle)) {
-                enemy.currentHealth -= 5
-                break
-            }
-        }
-        attacking = false
-    }
-
     private fun handleInput(){
 
         val x0 = Gdx.input.getX(0) / Gdx.graphics.width.toFloat() * 960
@@ -61,9 +45,12 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         handleMovement(state, enemies, dt)
         attackCooldown += dt
         if ( attacking ) {
-            attack(this, enemies)
+            println("swinging")
+            attackDelay += dt
+            if ( attackDelay > 0.25f) {
+                attack(this, enemies)
+            }
         }
     }
-
 
 }
