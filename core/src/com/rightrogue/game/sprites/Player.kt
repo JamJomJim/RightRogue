@@ -9,7 +9,7 @@ import kotlin.math.absoluteValue
 class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: TextureRegion) : Entity(xPos, yPos, width, height, texture){
     override val maxHealth = 10
     override var currentHealth = 10
-    override var regeneration = 1
+    override var regeneration = 0
 
     //todo add in movement and attack animations
     private fun handleInput(){

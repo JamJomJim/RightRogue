@@ -30,7 +30,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private val skin = Skin()
     private val distLabel : Label
     private val spriteSheet = Texture("tileset32.png")
-    private val textures: Array<Array<TextureRegion>> = TextureRegion.split(spriteSheet, 32, 32)
+    val textures: Array<Array<TextureRegion>> = TextureRegion.split(spriteSheet, 32, 32)
     private val playerTexture = textures[2][0]
     private val enemyTexture = textures[2][1]
 
@@ -39,7 +39,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private var enemies = mutableListOf<Entity>()
     private var distanceCompleted = 0
 
-    var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
+    var map = Map(this, RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
 
     init {
         //sets this playState as the thing that handles input

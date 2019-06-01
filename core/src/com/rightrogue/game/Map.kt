@@ -1,8 +1,10 @@
 package com.rightrogue.game
 
+import com.badlogic.gdx.graphics.Texture
 import com.rightrogue.game.sprites.Block
+import com.rightrogue.game.states.PlayState
 
-class Map(width: Int, height: Int) {
+class Map(var state: PlayState, width: Int, height: Int) {
     var layout = MutableList(width) {arrayOfNulls<Block>(height).toMutableList()}
 
     init {
@@ -13,7 +15,7 @@ class Map(width: Int, height: Int) {
         //creates a map the size of the screen completely full of blocks.
         for (i in 0 until layout.size) {
             for (j in 0 until layout[i].size) {
-                layout[i][j] = Block(i.toFloat(), j.toFloat())
+                layout[i][j] = Block(i.toFloat(), j.toFloat(), Texture("newblock48.png"))
             }
         }
 
@@ -47,7 +49,7 @@ class Map(width: Int, height: Int) {
         val newMapPiece = arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK).toMutableList()
 
         for (i in 0 until newMapPiece.size) {
-            newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH / RightRogue.PIXELS_PER_BLOCK.toFloat() + distanceCompleted - 1, i.toFloat())
+            newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH / RightRogue.PIXELS_PER_BLOCK.toFloat() + distanceCompleted - 1, i.toFloat(), Texture("newblock48.png"))
         }
 
         var x = layout.indexOf(layout.last()) + distanceCompleted
