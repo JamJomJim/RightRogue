@@ -17,7 +17,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
     var rectangle = Rectangle(sprite.x, sprite.y, width, height)
     var grounded = true
     var attackDamage = 1
-    var attackRange = 16
+    var attackRange = 16f
     var attacking = false
     var attackCooldown = 1f
     var attackDelay = 0f
@@ -29,13 +29,13 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
         sprite.y = rectangle.y
     }
 
-    abstract fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float)
+    abstract fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float)
 
-    fun attack(entity: Entity, enemies : MutableList<Entity>){
+    fun attack(enemies : MutableList<Entity>){
         attackCooldown = 0f
         attackDelay = 0f
         println("attack")
-        val hitbox = Rectangle(entity.rectangle.x, entity.rectangle.y - 8, entity.rectangle.width + attackRange, entity.rectangle.height + attackRange)
+        val hitbox = Rectangle(rectangle.x - attackRange, rectangle.y, rectangle.width + 2 * attackRange, rectangle.height + 2 * attackRange)
         for ( enemy in enemies ) {
             if ( hitbox.overlaps(enemy.rectangle)) {
                 enemy.currentHealth -= attackDamage

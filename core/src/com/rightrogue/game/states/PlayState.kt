@@ -35,6 +35,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private val enemyTexture = textures[2][1]
 
     private var player : Player
+    private var allies = mutableListOf<Entity>()
     private var enemies = mutableListOf<Entity>()
     private var distanceCompleted = 0
 
@@ -74,7 +75,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
         //initializes the player
         player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, playerTexture )
-
+        allies.add(player)
         //adds an enemy right in front of the player for testing purposes
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, enemyTexture))
     }
@@ -116,9 +117,9 @@ class PlayState(private var gsm: GameStateManager) : State(){
         }
 
         //updates the player and enemies
-        player.update(this, enemies, dt)
+        player.update(this, allies, enemies, dt)
         for ( enemy in enemies ) {
-            enemy.update(this, enemies, dt)
+            enemy.update(this, enemies, allies, dt)
         }
 
         //removes enemies from the game if their health is 0
@@ -127,6 +128,10 @@ class PlayState(private var gsm: GameStateManager) : State(){
             if ( iter.next().currentHealth <= 0 ) {
                 iter.remove()
             }
+        }
+
+        if ( player.currentHealth <= 0) {
+            gsm.pushState(KilledState(gsm))
         }
     }
 

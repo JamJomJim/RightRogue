@@ -40,7 +40,7 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         }
     }
 
-    override fun update(state: PlayState, enemies : MutableList<Entity>, dt: Float){
+    override fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
         handleInput()
         handleMovement(state, enemies, dt)
         attackCooldown += dt
@@ -48,7 +48,7 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
             println("swinging")
             attackDelay += dt
             if ( attackDelay > 0.25f) {
-                attack(this, enemies)
+                attack( enemies )
             }
         }
     }
