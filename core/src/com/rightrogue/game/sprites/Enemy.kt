@@ -6,7 +6,8 @@ import com.rightrogue.game.states.PlayState
 class Enemy(xPos: Float, yPos: Float, width: Float, height: Float, texture: TextureRegion) : Entity(xPos, yPos, width, height, texture){
 
     override fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float){
-        handleMovement(state, dt)
+        handleMovement(state, enemies, dt)
+
     }
 
 

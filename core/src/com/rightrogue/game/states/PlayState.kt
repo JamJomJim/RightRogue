@@ -117,7 +117,9 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
         //updates the player and enemies
         player.update(this, enemies, dt)
+        println(enemies)
         for ( enemy in enemies ) {
+            println(enemy.rectangle.y)
             enemy.update(this, enemies, dt)
         }
 

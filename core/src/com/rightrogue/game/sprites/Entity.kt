@@ -26,7 +26,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
 
     abstract fun update(state: PlayState, enemies: MutableList<Entity>, dt: Float)
 
-    fun handleMovement(state: PlayState, dt: Float){
+    fun handleMovement(state: PlayState, enemies: MutableList<Entity>, dt: Float){
         //gravity
         acceleration.y += 1440f * dt
 
@@ -42,7 +42,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
         velocity.scl(dt)
 
         //Checks collisions
-        //adds the player's velocity to their position, then checks to see if that moved them into a block. If it did, then it moves them to the edge of the block.
+        //adds the player's velocity to their position, then checks to see if that moved them into a block/enemy. If it did, then it moves them to the edge of the block/enemy.
         rectangle.y += velocity.y
         for ( i in 0 until state.map.layout.size ){
             for ( j in 0 until state.map.layout[i].size) {
@@ -57,11 +57,25 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
                 }
             }
         }
+        for ( enemy in enemies ) {
+            if ( enemy != this && rectangle.overlaps(enemy.rectangle)) {
+                if (velocity.y > 0) {
+                    rectangle.y = enemy.rectangle.y - rectangle.height
+                }
+                else rectangle.y = enemy.rectangle.y + enemy.rectangle.height
+                velocity.y = 0f
+                acceleration.y = 0f
+            }
+        }
 
         rectangle.x += velocity.x
         for ( i in 0 until state.map.layout.size ){
             for ( j in 0 until state.map.layout[i].size) {
                 if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
+                    if ( velocity.y > 0 ) {
+                        grounded = true
+                        acceleration.y = 0f
+                    }
                     if (velocity.x > 0) {
                         rectangle.x = state.map.layout[i][j]!!.rectangle.x - rectangle.width
                     }
@@ -71,15 +85,19 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
                 }
             }
         }
-
-        //prevents the entity from going off of the screen to the left.
-        if (this is Player && rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) {
-            rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
-
+        for ( enemy in enemies ) {
+            if ( enemy != this && rectangle.overlaps(enemy.rectangle)) {
+                if (velocity.x > 0) {
+                    rectangle.x = enemy.rectangle.x - rectangle.width
+                }
+                else rectangle.x = enemy.rectangle.x + enemy.rectangle.width
+                velocity.x = 0f
+                acceleration.x = 0f
+            }
         }
-        else if ( rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f - this.rectangle.width) {
-            this.currentHealth = -1
-        }
+
+        //prevents the player from going off of the screen to the left.
+        if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
 
         //sets the player's sprite's location to the player's rectangle's location.
         sprite.x = rectangle.x
