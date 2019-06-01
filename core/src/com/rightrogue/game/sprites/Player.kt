@@ -7,6 +7,9 @@ import kotlin.math.absoluteValue
 
 
 class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: TextureRegion) : Entity(xPos, yPos, width, height, texture){
+    override val maxHealth = 10
+    override var currentHealth = 10
+    override var regeneration = 1
 
     //todo add in movement and attack animations
     private fun handleInput(){
@@ -41,6 +44,7 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
     }
 
     override fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
+        super.update(state, allies, enemies, dt)
         handleInput()
         handleMovement(state, enemies, dt)
         attackCooldown += dt

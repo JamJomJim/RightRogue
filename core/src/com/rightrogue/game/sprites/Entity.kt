@@ -9,8 +9,11 @@ import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 
 abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, texture : TextureRegion){
-    val maxHealth: Int = 10
-    var currentHealth: Int = 10
+    abstract val maxHealth: Int
+    abstract var currentHealth: Int
+    abstract var regeneration: Int
+
+    var regenTimer = 0f
     var velocity: Vector2 = Vector2(0f,0f)
     var acceleration: Vector2 = Vector2(0f,0f)
     var sprite = Sprite(texture)
@@ -23,13 +26,25 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, tex
     var attackDelay = 0f
 
     init {
+
         rectangle.x = xPos * RightRogue.PIXELS_PER_BLOCK.toFloat()
         rectangle.y = yPos * RightRogue.PIXELS_PER_BLOCK.toFloat()
         sprite.x = rectangle.x
         sprite.y = rectangle.y
     }
 
-    abstract fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float)
+    open fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
+        regenTimer += dt
+        if ( regenTimer >= 3 ) {
+            regenTimer = 0f
+            if ( currentHealth < maxHealth ) {
+                currentHealth += regeneration
+                if ( currentHealth > maxHealth ) {
+                    currentHealth = maxHealth
+                }
+            }
+        }
+    }
 
     fun attack(enemies : MutableList<Entity>){
         attackCooldown = 0f
