@@ -8,6 +8,7 @@ class Enemy(xPos: Float, yPos: Float, width: Float, height: Float, texture: Text
     override val maxHealth = 5
     override var currentHealth = 5
     override var regeneration = 0
+
     init{
         direction = "LEFT"
     }

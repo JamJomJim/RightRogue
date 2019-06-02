@@ -15,7 +15,7 @@ class Map(var state: PlayState, width: Int, height: Int) {
         //creates a map the size of the screen completely full of blocks.
         for (i in 0 until layout.size) {
             for (j in 0 until layout[i].size) {
-                layout[i][j] = Block(i.toFloat(), j.toFloat(), Texture("newblock48.png"))
+                layout[i][j] = Block(i.toFloat(), j.toFloat(), Texture("defaultBlock48.png"))
             }
         }
 
@@ -49,7 +49,7 @@ class Map(var state: PlayState, width: Int, height: Int) {
         val newMapPiece = arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK).toMutableList()
 
         for (i in 0 until newMapPiece.size) {
-            newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH / RightRogue.PIXELS_PER_BLOCK.toFloat() + distanceCompleted - 1, i.toFloat(), Texture("newblock48.png"))
+            newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH / RightRogue.PIXELS_PER_BLOCK.toFloat() + distanceCompleted - 1, i.toFloat(), Texture("defaultBlock48.png"))
         }
 
         var x = layout.indexOf(layout.last()) + distanceCompleted
@@ -74,7 +74,6 @@ class Map(var state: PlayState, width: Int, height: Int) {
                 }
             }
             newMapPiece[y] = null
-
         }
 
         layout = layout.drop(1).toMutableList()

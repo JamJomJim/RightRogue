@@ -2,8 +2,6 @@ package com.rightrogue.game.sprites
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Sprite
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.rightrogue.game.states.PlayState
 import kotlin.math.absoluteValue
 
@@ -12,14 +10,11 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
     override var currentHealth = 10
     override var regeneration = 1
 
-
-
-    init {
-
-
-        sprite = Sprite(textures[0][1])
+    init{
+        currentHealth = maxHealth
     }
-    //todo add in movement and attack animations
+
+    //todo add attack animations
     private fun handleInput(){
 
         val x0 = Gdx.input.getX(0) / Gdx.graphics.width.toFloat() * 960
@@ -31,7 +26,7 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
 
         val touchLeft = Gdx.input.isTouched(0) && x0 < 240 || Gdx.input.isTouched(1) && x1 < 240
         val touchRight = Gdx.input.isTouched(0) && x0 >= 240 && x0 < 480 || Gdx.input.isTouched(1) && x1 >= 240 && x1 < 480
-        val touchJump = Gdx.input.isTouched(0) && x0 >= 480 && yVel0.absoluteValue >= 10 || Gdx.input.isTouched(1) && x1 >= 480 && yVel1.absoluteValue >= 10
+        val touchJump = Gdx.input.isTouched(0) && x0 >= 480 && yVel0 <= -10 || Gdx.input.isTouched(1) && x1 >= 480 && yVel1 <= -10
         val touchAttack = Gdx.input.isTouched(0) && x0 >= 480 && xVel0.absoluteValue >= 10 || Gdx.input.isTouched(1) && x1 >= 480 && xVel1.absoluteValue >= 10
 
         if ( touchJump && grounded ) {
@@ -77,7 +72,5 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
                 attack( enemies )
             }
         }
-
     }
-
 }

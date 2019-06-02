@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -21,7 +20,6 @@ import com.rightrogue.game.sprites.Player
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.rightrogue.game.sprites.Entity
 
-
 class PlayState(private var gsm: GameStateManager) : State(){
 
     private val shapeRenderer = ShapeRenderer()
@@ -29,10 +27,8 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private val labelStyle = LabelStyle()
     private val skin = Skin()
     private val distLabel : Label
-    private val spriteSheet = Texture("tileset32.png")
-    val textures: Array<Array<TextureRegion>> = TextureRegion.split(spriteSheet, 32, 32)
-    private val playerTexture = Texture("warrior_m.png")
-    private val enemyTexture = Texture("defaultenemy.png")
+    private val playerTextures = Texture("player.png")
+    private val enemyTextures = Texture("defaultEnemy.png")
 
     private var player : Player
     private var allies = mutableListOf<Entity>()
@@ -50,10 +46,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         //initializes the camera
         cam.setToOrtho(true, (RightRogue.PIXEL_WIDTH).toFloat(), (RightRogue.PIXEL_HEIGHT).toFloat())
 
-        //rotates the player and default enemy sprite to be the right way up
-        textures[2][0].flip(false, true)
-        textures[2][1].flip(false, true)
-
+        //todo get a font that suits the game better
         //sets up the font used throughout the game
         skin.add("LS90", BitmapFont(Gdx.files.internal("fonts/LS90.fnt")))
         skin.getFont("LS90").data.setScale(0.5f)
@@ -74,10 +67,10 @@ class PlayState(private var gsm: GameStateManager) : State(){
         stage.addActor(table)
 
         //initializes the player
-        player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, playerTexture )
+        player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, playerTextures )
         allies.add(player)
         //adds an enemy right in front of the player for testing purposes
-        enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTexture))
+        enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
     }
 
     //if the back button is pushed, pause the game
@@ -91,7 +84,6 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
     override fun handleInput(dt: Float) {
 
-
     }
 
     override fun update(dt: Float) {
@@ -103,7 +95,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
             map.updateMap(distanceCompleted)
             //has a 1 in 8 chance of spawning an enemy every time more map generates.
             if ( rand(1, 8) == 1)
-                enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.layout.last().indexOfLast { it == null }.toFloat(),24f,32f, enemyTexture))
+                enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.layout.last().indexOfLast { it == null }.toFloat(),24f,32f, enemyTextures))
         }
 
         //updates distance completed.
