@@ -31,8 +31,8 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private val distLabel : Label
     private val spriteSheet = Texture("tileset32.png")
     val textures: Array<Array<TextureRegion>> = TextureRegion.split(spriteSheet, 32, 32)
-    private val playerTexture = textures[2][0]
-    private val enemyTexture = textures[2][1]
+    private val playerTexture = Texture("warrior_m.png")
+    private val enemyTexture = Texture("defaultenemy.png")
 
     private var player : Player
     private var allies = mutableListOf<Entity>()
@@ -77,7 +77,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, playerTexture )
         allies.add(player)
         //adds an enemy right in front of the player for testing purposes
-        enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, enemyTexture))
+        enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTexture))
     }
 
     //if the back button is pushed, pause the game
@@ -103,7 +103,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
             map.updateMap(distanceCompleted)
             //has a 1 in 8 chance of spawning an enemy every time more map generates.
             if ( rand(1, 8) == 1)
-                enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.layout.last().indexOfLast { it == null }.toFloat(),32f,32f, enemyTexture))
+                enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.layout.last().indexOfLast { it == null }.toFloat(),24f,32f, enemyTexture))
         }
 
         //updates distance completed.
