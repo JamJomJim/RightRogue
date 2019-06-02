@@ -74,7 +74,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         stage.addActor(table)
 
         //initializes the player
-        player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, playerTexture )
+        player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, playerTexture )
         allies.add(player)
         //adds an enemy right in front of the player for testing purposes
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 32f, 32f, enemyTexture))
