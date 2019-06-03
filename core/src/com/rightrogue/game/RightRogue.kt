@@ -2,9 +2,11 @@ package com.rightrogue.game
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils.random
+import com.badlogic.gdx.utils.Json
 import com.rightrogue.game.states.GameStateManager
 import com.rightrogue.game.states.MenuState
 import com.rightrogue.game.states.PauseState
@@ -25,10 +27,8 @@ class RightRogue : ApplicationAdapter() {
         const val BLOCK_HEIGHT = PIXEL_HEIGHT / PIXELS_PER_BLOCK
     }
 
-
     lateinit var batch: SpriteBatch
     lateinit var gsm: GameStateManager
-
 
     override fun create() {
         gsm = GameStateManager(this)
@@ -53,4 +53,12 @@ class RightRogue : ApplicationAdapter() {
         super.pause()
     }
 
+//    fun saveGame() {
+//        save.putString("save", json.toJson(gsm))
+//    }
+//
+//    fun loadGame() {
+//        gsm = json.fromJson(GameStateManager::class.java, this.save.getString("save"))
+//
+//    }
 }

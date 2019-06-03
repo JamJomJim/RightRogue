@@ -95,7 +95,6 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
     fun attack(enemies : MutableList<Entity>){
         attackCooldown = 0f
         attackDelay = 0f
-        println("attack")
         val hitbox = Rectangle(rectangle.x - attackRange, rectangle.y, rectangle.width + 2 * attackRange, rectangle.height + 2 * attackRange)
         for ( enemy in enemies ) {
             if ( hitbox.overlaps(enemy.rectangle)) {

@@ -18,9 +18,12 @@ import com.rightrogue.game.rand
 import com.rightrogue.game.sprites.Enemy
 import com.rightrogue.game.sprites.Player
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
+import com.badlogic.gdx.utils.Json
 import com.rightrogue.game.sprites.Entity
 
 class PlayState(private var gsm: GameStateManager) : State(){
+
+    private val json = Json()
 
     private val shapeRenderer = ShapeRenderer()
     private val stage = Stage(ExtendViewport(RightRogue.PIXEL_WIDTH.toFloat(), RightRogue.PIXEL_HEIGHT.toFloat()), gsm.game.batch)
@@ -35,7 +38,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private var enemies = mutableListOf<Entity>()
     private var distanceCompleted = 0
 
-    var map = Map(this, RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
+    var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
 
     init {
         //sets this playState as the thing that handles input
@@ -73,9 +76,17 @@ class PlayState(private var gsm: GameStateManager) : State(){
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
     }
 
+    fun saveGame() {
+        gsm.save.putString("gameSave", json.toJson(map.serializableLayout))
+        gsm.save.flush()
+        println("save")
+    }
+
+
     //if the back button is pushed, pause the game
     override fun keyDown(keycode: Int): Boolean {
-        if ( keycode == Input.Keys.BACK ) {
+        if ( keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
+            saveGame()
             gsm.pushState(PauseState(gsm))
             return true
         }

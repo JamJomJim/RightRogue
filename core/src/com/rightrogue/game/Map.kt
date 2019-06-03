@@ -2,13 +2,25 @@ package com.rightrogue.game
 
 import com.badlogic.gdx.graphics.Texture
 import com.rightrogue.game.sprites.Block
-import com.rightrogue.game.states.PlayState
 
-class Map(var state: PlayState, width: Int, height: Int) {
+class Map(width: Int, height: Int) {
     var layout = MutableList(width) {arrayOfNulls<Block>(height).toMutableList()}
+    var serializableLayout: MutableList<MutableList<String>> = MutableList(width) { MutableList(height) {"default"}}
 
     init {
         newMap()
+        println(serializableLayout)
+    }
+
+    fun loadLayout(temp: MutableList<MutableList<String>>) {
+        println(temp.toList()[0].toList().size)
+        for ( i in 0 until temp.toList().size ) {
+            for ( j in 0 until temp.toList()[i].toList().size) {
+                when ( temp.toList()[i].toList()[j] ) {
+                    "default" -> layout[i][j] = Block(i.toFloat(), j.toFloat(), Texture("defaultBlock48.png"))
+                }
+            }
+        }
     }
 
     private fun newMap(){

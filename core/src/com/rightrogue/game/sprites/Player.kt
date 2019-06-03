@@ -66,7 +66,6 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         handleMovement(state, enemies, dt)
         attackCooldown += dt
         if ( attacking ) {
-            println("swinging")
             attackDelay += dt
             if ( attackDelay > 0.25f) {
                 attack( enemies )

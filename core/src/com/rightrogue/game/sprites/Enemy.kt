@@ -26,7 +26,6 @@ class Enemy(xPos: Float, yPos: Float, width: Float, height: Float, texture: Text
             }
         }
         if ( attacking ) {
-            println("swinging")
             attackDelay += dt
             if ( attackDelay > 1f) {
                 attack( enemies )
