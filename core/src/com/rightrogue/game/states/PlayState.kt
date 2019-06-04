@@ -2,6 +2,7 @@ package com.rightrogue.game.states
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -18,12 +19,11 @@ import com.rightrogue.game.rand
 import com.rightrogue.game.sprites.Enemy
 import com.rightrogue.game.sprites.Player
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
-import com.badlogic.gdx.utils.Json
 import com.rightrogue.game.sprites.Entity
+import com.squareup.moshi.Moshi
+
 
 class PlayState(private var gsm: GameStateManager) : State(){
-
-    private val json = Json()
 
     private val shapeRenderer = ShapeRenderer()
     private val stage = Stage(ExtendViewport(RightRogue.PIXEL_WIDTH.toFloat(), RightRogue.PIXEL_HEIGHT.toFloat()), gsm.game.batch)
@@ -40,7 +40,14 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
     var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
 
+    var save: Preferences = Gdx.app.getPreferences("My Preferences")
+    var moshi = Moshi.Builder().build()
+    var jsonAdapter = moshi.adapter(Array<Array<String>>::class.java)
+
     init {
+
+
+
         //sets this playState as the thing that handles input
         Gdx.input.inputProcessor = this
         //stops the phone from quitting the app when the back button is pressed by giving the command to the app instead
@@ -74,14 +81,30 @@ class PlayState(private var gsm: GameStateManager) : State(){
         allies.add(player)
         //adds an enemy right in front of the player for testing purposes
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
+
+        if ( !save.getString("gameSave").isNullOrEmpty() ) {
+            println(save.getString("gameSave"))
+            //map.loadMap(jsonAdapter.fromJson(save.getString("gameSave"))!!.toMutableList())
+        }
     }
 
-    fun saveGame() {
-        gsm.save.putString("gameSave", json.toJson(map.serializableLayout))
-        gsm.save.flush()
+    private fun saveGame() {
+        val json = jsonAdapter.toJson(map.layout.toTypedArray())
+        println(json)
+
+        save.putString("gameSave", json)
+        save.flush()
+        println(save.getString("gameSave"))
+        println(jsonAdapter.fromJson(save.getString("gameSave")))
+
         println("save")
     }
 
+    private fun loadGame() {
+        val json = jsonAdapter.fromJson(save.getString("gameSave"))
+        println(json)
+        // map.layout = json!!.toMutableList()
+    }
 
     //if the back button is pushed, pause the game
     override fun keyDown(keycode: Int): Boolean {
@@ -98,6 +121,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     }
 
     override fun update(dt: Float) {
+
         //not sure this does anything since nothing within the stage moves?
         stage.act(dt)
         //updates the map when the player has gone far enough right.
@@ -106,7 +130,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
             map.updateMap(distanceCompleted)
             //has a 1 in 8 chance of spawning an enemy every time more map generates.
             if ( rand(1, 8) == 1)
-                enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.layout.last().indexOfLast { it == null }.toFloat(),24f,32f, enemyTextures))
+                enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.gameMap.last().indexOfLast { it == null }.toFloat(),24f,32f, enemyTextures))
         }
 
         //updates distance completed.
@@ -143,7 +167,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         sb.begin()
 
         //draws all of the non-null blocks in map
-        map.layout.flatMap{ it.toList() }
+        map.gameMap.flatMap{ it.toList() }
                 .filterNotNull()
                 .forEach { it.draw(sb) }
 

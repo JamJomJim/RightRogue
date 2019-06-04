@@ -123,14 +123,14 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
         //Checks collisions
         //adds the player's velocity to their position, then checks to see if that moved them into a block/enemy. If it did, then it moves them to the edge of the block/enemy.
         rectangle.y += velocity.y
-        for ( i in 0 until state.map.layout.size ){
-            for ( j in 0 until state.map.layout[i].size) {
-                if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
+        for ( i in 0 until state.map.gameMap.size ){
+            for ( j in 0 until state.map.gameMap[i].size) {
+                if (state.map.gameMap[i][j]?.rectangle != null && rectangle.overlaps(state.map.gameMap[i][j]?.rectangle)) {
                     if (velocity.y > 0) {
                         grounded = true
-                        rectangle.y = state.map.layout[i][j]!!.rectangle.y - rectangle.height
+                        rectangle.y = state.map.gameMap[i][j]!!.rectangle.y - rectangle.height
                     }
-                    else rectangle.y = state.map.layout[i][j]!!.rectangle.y + state.map.layout[i][j]!!.rectangle.height
+                    else rectangle.y = state.map.gameMap[i][j]!!.rectangle.y + state.map.gameMap[i][j]!!.rectangle.height
                     velocity.y = 0f
                     acceleration.y = 0f
                 }
@@ -148,17 +148,17 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
         }
 
         rectangle.x += velocity.x
-        for ( i in 0 until state.map.layout.size ){
-            for ( j in 0 until state.map.layout[i].size) {
-                if (state.map.layout[i][j]?.rectangle != null && rectangle.overlaps(state.map.layout[i][j]?.rectangle)) {
+        for ( i in 0 until state.map.gameMap.size ){
+            for ( j in 0 until state.map.gameMap[i].size) {
+                if (state.map.gameMap[i][j]?.rectangle != null && rectangle.overlaps(state.map.gameMap[i][j]?.rectangle)) {
                     if ( velocity.y > 0 ) {
                         grounded = true
                         acceleration.y = 0f
                     }
                     if (velocity.x > 0) {
-                        rectangle.x = state.map.layout[i][j]!!.rectangle.x - rectangle.width
+                        rectangle.x = state.map.gameMap[i][j]!!.rectangle.x - rectangle.width
                     }
-                    else rectangle.x = state.map.layout[i][j]!!.rectangle.x + state.map.layout[i][j]!!.rectangle.width
+                    else rectangle.x = state.map.gameMap[i][j]!!.rectangle.x + state.map.gameMap[i][j]!!.rectangle.width
                     velocity.x = 0f
                     acceleration.x = 0f
                 }

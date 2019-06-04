@@ -1,41 +1,32 @@
 package com.rightrogue.game
 
-import com.badlogic.gdx.graphics.Texture
 import com.rightrogue.game.sprites.Block
 
 class Map(width: Int, height: Int) {
-    var layout = MutableList(width) {arrayOfNulls<Block>(height).toMutableList()}
-    var serializableLayout: MutableList<MutableList<String>> = MutableList(width) { MutableList(height) {"default"}}
+    var gameMap = MutableList(width) {arrayOfNulls<Block>(height).toMutableList()}
+    var layout = MutableList(width) { Array(height) {"default"}}
 
     init {
         newMap()
-        println(serializableLayout)
     }
 
-    fun loadLayout(temp: MutableList<MutableList<String>>) {
-        println(temp.toList()[0].toList().size)
-        for ( i in 0 until temp.toList().size ) {
-            for ( j in 0 until temp.toList()[i].toList().size) {
-                when ( temp.toList()[i].toList()[j] ) {
-                    "default" -> layout[i][j] = Block(i.toFloat(), j.toFloat(), Texture("defaultBlock48.png"))
-                }
-            }
-        }
+    fun loadMap(mapLayout: MutableList<Array<String>>){
+
     }
 
     private fun newMap(){
         //creates a map the size of the screen completely full of blocks.
-        for (i in 0 until layout.size) {
-            for (j in 0 until layout[i].size) {
-                layout[i][j] = Block(i.toFloat(), j.toFloat(), Texture("defaultBlock48.png"))
+        for (i in 0 until gameMap.size) {
+            for (j in 0 until gameMap[i].size) {
+                gameMap[i][j] = Block(i.toFloat(), j.toFloat(), "default")
             }
         }
 
         //makes a small road from the spawn point.
-        layout[0][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
-        layout[1][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
-        layout[2][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
-        layout[3][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
+        gameMap[0][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
+        gameMap[1][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
+        gameMap[2][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
+        gameMap[3][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
 
 
         //creates a randomly generates path from the end of the spawn path.
@@ -52,7 +43,7 @@ class Map(width: Int, height: Int) {
                     if (y > 1) y -= 1
                 }
             }
-            layout[x][y] = null
+            gameMap[x][y] = null
         }
     }
 
@@ -61,19 +52,19 @@ class Map(width: Int, height: Int) {
         val newMapPiece = arrayOfNulls<Block>(RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK).toMutableList()
 
         for (i in 0 until newMapPiece.size) {
-            newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH / RightRogue.PIXELS_PER_BLOCK.toFloat() + distanceCompleted - 1, i.toFloat(), Texture("defaultBlock48.png"))
+            newMapPiece[i] = Block(RightRogue.PIXEL_WIDTH / RightRogue.PIXELS_PER_BLOCK.toFloat() + distanceCompleted - 1, i.toFloat(), "default")
         }
 
-        var x = layout.indexOf(layout.last()) + distanceCompleted
-        var y = layout.last().indexOf(null)
+        var x = gameMap.indexOf(gameMap.last()) + distanceCompleted
+        var y = gameMap.last().indexOf(null)
 
         if (rand(0, 1) == 1) {
-            y = layout.last().lastIndexOf(null)
+            y = gameMap.last().lastIndexOf(null)
         }
 
         newMapPiece[y] = null
 
-        while (x == layout.indexOf(layout.last()) + distanceCompleted) {
+        while (x == gameMap.indexOf(gameMap.last()) + distanceCompleted) {
             when(rand(1, 8)){
                 1,2,3,4 -> {
                     x += 1
@@ -88,7 +79,7 @@ class Map(width: Int, height: Int) {
             newMapPiece[y] = null
         }
 
-        layout = layout.drop(1).toMutableList()
-        layout.add(newMapPiece)
+        gameMap = gameMap.drop(1).toMutableList()
+        gameMap.add(newMapPiece)
     }
 }
