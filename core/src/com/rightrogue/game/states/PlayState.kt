@@ -45,9 +45,6 @@ class PlayState(private var gsm: GameStateManager) : State(){
     var jsonAdapter = moshi.adapter(Array<Array<String>>::class.java)
 
     init {
-
-
-
         //sets this playState as the thing that handles input
         Gdx.input.inputProcessor = this
         //stops the phone from quitting the app when the back button is pressed by giving the command to the app instead
@@ -83,27 +80,25 @@ class PlayState(private var gsm: GameStateManager) : State(){
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
 
         if ( !save.getString("gameSave").isNullOrEmpty() ) {
-            println(save.getString("gameSave"))
-            //map.loadMap(jsonAdapter.fromJson(save.getString("gameSave"))!!.toMutableList())
+            loadGame()
         }
     }
 
     private fun saveGame() {
+        map.saveMap()
         val json = jsonAdapter.toJson(map.layout.toTypedArray())
-        println(json)
-
         save.putString("gameSave", json)
         save.flush()
-        println(save.getString("gameSave"))
-        println(jsonAdapter.fromJson(save.getString("gameSave")))
-
         println("save")
     }
 
     private fun loadGame() {
         val json = jsonAdapter.fromJson(save.getString("gameSave"))
-        println(json)
-        // map.layout = json!!.toMutableList()
+        map.loadMap(json!!.toMutableList())
+        println(map.layout)
+        println(map.gameMap)
+        println("Load")
+
     }
 
     //if the back button is pushed, pause the game

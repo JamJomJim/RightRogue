@@ -4,14 +4,30 @@ import com.rightrogue.game.sprites.Block
 
 class Map(width: Int, height: Int) {
     var gameMap = MutableList(width) {arrayOfNulls<Block>(height).toMutableList()}
-    var layout = MutableList(width) { Array(height) {"default"}}
+    var layout = MutableList(width) { Array(height) {"nothing"}}
 
     init {
         newMap()
     }
 
-    fun loadMap(mapLayout: MutableList<Array<String>>){
+    fun saveMap(){
+        for (i in 0 until gameMap.size) {
+            for (j in 0 until gameMap[i].size) {
+                if ( gameMap[i][j] != null ) layout[i][j] = gameMap[i][j]!!.blockType
+            }
+        }
+    }
 
+    fun loadMap(mapLayout: MutableList<Array<String>>){
+        for (i in 0 until mapLayout.size) {
+            println(mapLayout[i].toString())
+            for (j in 0 until mapLayout[i].size) {
+                println(mapLayout[i][j])
+
+                if ( mapLayout[i][j] == "nothing" ) gameMap[i][j] = null
+                else gameMap[i][j] = Block(i.toFloat(), j.toFloat(), mapLayout[i][j])
+            }
+        }
     }
 
     private fun newMap(){
@@ -61,7 +77,9 @@ class Map(width: Int, height: Int) {
         if (rand(0, 1) == 1) {
             y = gameMap.last().lastIndexOf(null)
         }
+    //    if ( y == -1 ) y = 6
 
+        println(y)
         newMapPiece[y] = null
 
         while (x == gameMap.indexOf(gameMap.last()) + distanceCompleted) {
