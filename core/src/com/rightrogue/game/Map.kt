@@ -79,7 +79,6 @@ class Map(width: Int, height: Int) {
         }
     //    if ( y == -1 ) y = 6
 
-        println(y)
         newMapPiece[y] = null
 
         while (x == gameMap.indexOf(gameMap.last()) + distanceCompleted) {

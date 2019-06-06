@@ -89,16 +89,11 @@ class PlayState(private var gsm: GameStateManager) : State(){
         val json = jsonAdapter.toJson(map.layout.toTypedArray())
         save.putString("gameSave", json)
         save.flush()
-        println("save")
     }
 
     private fun loadGame() {
         val json = jsonAdapter.fromJson(save.getString("gameSave"))
         map.loadMap(json!!.toMutableList())
-        println(map.layout)
-        println(map.gameMap)
-        println("Load")
-
     }
 
     //if the back button is pushed, pause the game
