@@ -22,7 +22,7 @@ class MenuState(gsm: GameStateManager) : State(){
 
         //set up skins and fonts
         val skin = Skin()
-        skin.add("LS90", BitmapFont(Gdx.files.internal("fonts/LS90.fnt")))
+        skin.add("LS90", BitmapFont(Gdx.files.internal("fonts/manaspace.fnt")))
 
         //set defaults for different ui elements
         val textButtonStyle = TextButtonStyle()

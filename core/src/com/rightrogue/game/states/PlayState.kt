@@ -20,7 +20,9 @@ import com.rightrogue.game.sprites.Enemy
 import com.rightrogue.game.sprites.Player
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.rightrogue.game.sprites.Entity
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import java.lang.Exception
 
 
 class PlayState(private var gsm: GameStateManager) : State(){
@@ -40,9 +42,9 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
     var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
 
-    var save: Preferences = Gdx.app.getPreferences("My Preferences")
-    var moshi = Moshi.Builder().build()
-    var jsonAdapter = moshi.adapter(Array<Array<String>>::class.java)
+    private var save: Preferences = Gdx.app.getPreferences("My Preferences")
+    private var moshi: Moshi = Moshi.Builder().build()
+    private var jsonAdapter: JsonAdapter<Array<Array<String>>> = moshi.adapter(Array<Array<String>>::class.java)
 
     init {
         //sets this playState as the thing that handles input
@@ -80,7 +82,12 @@ class PlayState(private var gsm: GameStateManager) : State(){
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
 
         if ( !save.getString("gameSave").isNullOrEmpty() ) {
-            loadGame()
+            try {
+                loadGame()
+            }
+            catch (e: Exception){
+                save.clear()
+            }
         }
     }
 
