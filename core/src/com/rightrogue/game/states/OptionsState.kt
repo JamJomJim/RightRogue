@@ -43,7 +43,7 @@ class OptionsState(gsm: GameStateManager) : State() {
                 save.clear()
             }
         })
-        
+
         val backButton = TextButton("Back", skin)
         backButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
