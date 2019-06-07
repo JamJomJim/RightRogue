@@ -8,15 +8,17 @@ class Enemy(xPos: Float, yPos: Float, width: Float, height: Float, texture: Text
     override val maxHealth = 5
     override var currentHealth = 5
     override var regeneration = 0
+    var movement = "left"
 
     init{
         direction = "LEFT"
+
     }
 
     var rangeOfAttack = Rectangle(rectangle.x - attackRange, rectangle.y, rectangle.width + 2 * attackRange, rectangle.height + 2 * attackRange)
     override fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
         super.update(state, allies, enemies, dt)
-        handleMovement(state, enemies, dt)
+        handleMovement(state, allies, enemies, dt)
         attackCooldown += dt
         if ( !attacking && attackCooldown > 0.5f ) {
             for (enemy in enemies) {
@@ -25,10 +27,31 @@ class Enemy(xPos: Float, yPos: Float, width: Float, height: Float, texture: Text
                 }
             }
         }
+
         if ( attacking ) {
             attackDelay += dt
             if ( attackDelay > 1f) {
                 attack( enemies )
+            }
+        }
+
+        when ( movement ) {
+            "right" -> {
+                velocity.x = 128f
+                previousState = currentState
+                currentState = "RIGHT"
+                direction = "RIGHT"
+            }
+            "left" -> {
+                velocity.x = -128f
+                previousState = currentState
+                currentState = "LEFT"
+                direction = "LEFT"
+            }
+            else -> {
+                velocity.x = 0f
+                previousState = currentState
+                currentState = "STILL"
             }
         }
 

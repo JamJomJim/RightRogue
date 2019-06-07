@@ -63,7 +63,7 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
     override fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
         super.update(state, allies, enemies, dt)
         handleInput()
-        handleMovement(state, enemies, dt)
+        handleMovement(state, allies, enemies, dt)
         attackCooldown += dt
         if ( attacking ) {
             attackDelay += dt

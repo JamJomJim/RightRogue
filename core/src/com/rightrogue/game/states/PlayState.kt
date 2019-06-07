@@ -80,6 +80,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         allies.add(player)
         //adds an enemy right in front of the player for testing purposes
         enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
+        enemies.add(Enemy(2f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
 
         if ( !save.getString("gameSave").isNullOrEmpty() ) {
             try {

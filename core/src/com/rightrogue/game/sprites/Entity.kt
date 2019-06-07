@@ -105,7 +105,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
         attacking = false
     }
 
-    fun handleMovement(state: PlayState, enemies: MutableList<Entity>, dt: Float){
+    fun handleMovement(state: PlayState, allies: MutableList<Entity>, enemies: MutableList<Entity>, dt: Float){
         //gravity
         acceleration.y += 1440f * dt
 
@@ -136,12 +136,24 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
                 }
             }
         }
+
         for ( enemy in enemies ) {
             if ( enemy != this && rectangle.overlaps(enemy.rectangle)) {
                 if (velocity.y > 0) {
                     rectangle.y = enemy.rectangle.y - rectangle.height
                 }
                 else rectangle.y = enemy.rectangle.y + enemy.rectangle.height
+                velocity.y = 0f
+                acceleration.y = 0f
+            }
+        }
+
+        for ( ally in allies ) {
+            if ( ally != this && rectangle.overlaps(ally.rectangle)) {
+                if (velocity.y > 0) {
+                    rectangle.y = ally.rectangle.y - rectangle.height
+                }
+                else rectangle.y = ally.rectangle.y + ally.rectangle.height
                 velocity.y = 0f
                 acceleration.y = 0f
             }
@@ -176,6 +188,18 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
             }
         }
 
+        for ( ally in enemies ) {
+            if ( ally != this && rectangle.overlaps(ally.rectangle)) {
+                if (velocity.x > 0) {
+                    rectangle.x = ally.rectangle.x - rectangle.width
+                }
+                else rectangle.x = ally.rectangle.x + ally.rectangle.width
+                velocity.x = 0f
+                acceleration.x = 0f
+            }
+        }
+
+        println(enemies)
         //prevents the player from going off of the screen to the left.
         if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
 
