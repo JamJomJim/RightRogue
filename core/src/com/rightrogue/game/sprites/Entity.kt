@@ -199,7 +199,6 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
             }
         }
 
-        println(enemies)
         //prevents the player from going off of the screen to the left.
         if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
 

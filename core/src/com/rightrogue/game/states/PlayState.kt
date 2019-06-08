@@ -44,7 +44,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
     private var save: Preferences = Gdx.app.getPreferences("My Preferences")
     private var moshi: Moshi = Moshi.Builder().build()
-    private var jsonAdapter: JsonAdapter<Array<Array<String>>> = moshi.adapter(Array<Array<String>>::class.java)
+    private var mapJsonAdapter: JsonAdapter<Array<Array<String>>> = moshi.adapter(Array<Array<String>>::class.java)
 
     init {
         //sets this playState as the thing that handles input
@@ -76,13 +76,13 @@ class PlayState(private var gsm: GameStateManager) : State(){
         stage.addActor(table)
 
         //initializes the player
-        player = Player(0f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, playerTextures )
+        player = Player(0f, map.gameMap[0].lastIndexOf(null).toFloat(), 24f, 32f, playerTextures )
         allies.add(player)
         //adds an enemy right in front of the player for testing purposes
-        enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
-        enemies.add(Enemy(2f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
+       // enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
+       // enemies.add(Enemy(2f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
 
-        if ( !save.getString("gameSave").isNullOrEmpty() ) {
+        if ( !save.getString("mapSave").isNullOrEmpty() ) {
             try {
                 loadGame()
             }
@@ -94,14 +94,24 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
     private fun saveGame() {
         map.saveMap()
-        val json = jsonAdapter.toJson(map.layout.toTypedArray())
-        save.putString("gameSave", json)
+        val mapJson = mapJsonAdapter.toJson(map.layout.toTypedArray())
+        save.putString("mapSave", mapJson)
+//        save.putString("playerPosSave", player.rectangle.x.toString() + "," + player.rectangle.y.toString())
+//        save.putString("camPosSave", cam.position.x.toString() + "," + cam.position.y.toString())
+//        save.putString("distanceCompletedSave", distanceCompleted.toString())
         save.flush()
     }
 
     private fun loadGame() {
-        val json = jsonAdapter.fromJson(save.getString("gameSave"))
-        map.loadMap(json!!.toMutableList())
+        val mapJson = mapJsonAdapter.fromJson(save.getString("mapSave"))
+//        cam.position.x = save.getString("camPosSave").split(",", ignoreCase =  true)[0].toFloat()
+//        cam.position.y = save.getString("camPosSave").split(",", ignoreCase =  true)[1].toFloat()
+//        cam.update()
+//        player.rectangle.x = save.getString("playerPosSave").split(",", ignoreCase =  true)[0].toFloat()
+//        player.rectangle.y = save.getString("playerPosSave").split(",", ignoreCase =  true)[1].toFloat()
+//        distanceCompleted = save.getString("distanceCompletedSave").toInt()
+
+        map.loadMap(mapJson!!.toMutableList())
     }
 
     //if the back button is pushed, pause the game
@@ -120,11 +130,18 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
     override fun update(dt: Float) {
 
+        //updates the player and enemies
+        player.update(this, allies, enemies, dt)
+        for ( enemy in enemies ) {
+            enemy.update(this, enemies, allies, dt)
+        }
+
         //not sure this does anything since nothing within the stage moves?
         stage.act(dt)
         //updates the map when the player has gone far enough right.
         if (player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted && player.sprite.x / RightRogue.PIXELS_PER_BLOCK >= 3) {
             distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
+            println("test")
             map.updateMap(distanceCompleted)
             //has a 1 in 8 chance of spawning an enemy every time more map generates.
             if ( rand(1, 8) == 1)
@@ -141,11 +158,6 @@ class PlayState(private var gsm: GameStateManager) : State(){
             cam.update()
         }
 
-        //updates the player and enemies
-        player.update(this, allies, enemies, dt)
-        for ( enemy in enemies ) {
-            enemy.update(this, enemies, allies, dt)
-        }
 
         //removes enemies from the game if their health is 0
         val iter = enemies.iterator()

@@ -20,10 +20,7 @@ class Map(width: Int, height: Int) {
 
     fun loadMap(mapLayout: MutableList<Array<String>>){
         for (i in 0 until mapLayout.size) {
-            println(mapLayout[i].toString())
             for (j in 0 until mapLayout[i].size) {
-                println(mapLayout[i][j])
-
                 if ( mapLayout[i][j] == "nothing" ) gameMap[i][j] = null
                 else gameMap[i][j] = Block(i.toFloat(), j.toFloat(), mapLayout[i][j])
             }
