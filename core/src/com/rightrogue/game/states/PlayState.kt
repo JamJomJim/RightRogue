@@ -75,9 +75,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
         stage.addActor(table)
 
-        //initializes the player
-        player = Player(0f, map.gameMap[0].lastIndexOf(null).toFloat(), 24f, 32f, playerTextures )
-        allies.add(player)
+
         //adds an enemy right in front of the player for testing purposes
        // enemies.add(Enemy(1f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
        // enemies.add(Enemy(2f, RightRogue.BLOCK_HEIGHT / 2f, 24f, 32f, enemyTextures))
@@ -90,6 +88,11 @@ class PlayState(private var gsm: GameStateManager) : State(){
                 save.clear()
             }
         }
+        println(map.gameMap[0].lastIndexOf(null).toFloat())
+        //initializes the player
+
+        player = Player(0f, map.gameMap[0].lastIndexOf(null).toFloat(), 24f, 32f, playerTextures )
+        allies.add(player)
     }
 
     private fun saveGame() {
@@ -135,13 +138,12 @@ class PlayState(private var gsm: GameStateManager) : State(){
         for ( enemy in enemies ) {
             enemy.update(this, enemies, allies, dt)
         }
-
+        //println(player.rectangle.x)
         //not sure this does anything since nothing within the stage moves?
         stage.act(dt)
         //updates the map when the player has gone far enough right.
         if (player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted && player.sprite.x / RightRogue.PIXELS_PER_BLOCK >= 3) {
             distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
-            println("test")
             map.updateMap(distanceCompleted)
             //has a 1 in 8 chance of spawning an enemy every time more map generates.
             if ( rand(1, 8) == 1)
