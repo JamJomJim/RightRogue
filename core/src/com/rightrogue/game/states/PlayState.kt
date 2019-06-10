@@ -35,7 +35,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
     private val playerTextures = Texture("player.png")
     private val enemyTextures = Texture("defaultEnemy.png")
 
-    private var player : Player
+    var player : Player
     private var allies = mutableListOf<Entity>()
     private var enemies = mutableListOf<Entity>()
     private var distanceCompleted = 0

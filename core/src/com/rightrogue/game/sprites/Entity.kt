@@ -24,7 +24,6 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
     var velocity: Vector2 = Vector2(0f,0f)
     var sprite = Sprite(textures[0][1])
     var rectangle = Rectangle(sprite.x, sprite.y, width, height)
-    var grounded = true
 
     private var attackDamage = 1
     var attackRange = 16f
@@ -33,8 +32,9 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
     var attackDelay = 0f
 
     private var stateTimer = 0f
-    var currentState = "STILL"
-    var previousState = "STILL"
+    var currentMoveState = "STILL"
+    var previousMoveState = "STILL"
+    var jumpState = "GROUNDED"
     var direction = "RIGHT"
 
     init {
@@ -72,7 +72,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
         }
 
         //processes animations and sets the sprite to the right frame.
-        when (currentState) {
+        when (currentMoveState) {
             "STILL" -> {
                 if ( direction == "RIGHT" ){
                     sprite.setRegion(textures[0][1])
@@ -88,7 +88,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
             }
 
         }
-        if ( currentState != previousState) stateTimer = 0f
+        if ( currentMoveState != previousMoveState) stateTimer = 0f
         stateTimer += dt
     }
 
@@ -105,7 +105,20 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
         attacking = false
     }
 
-    fun handleMovement(state: PlayState, allies: MutableList<Entity>, enemies: MutableList<Entity>, dt: Float){
+    open fun handleMovement(state: PlayState, allies: MutableList<Entity>, enemies: MutableList<Entity>, dt: Float){
+        if ( jumpState == "JUMPING" ) {
+            velocity.y = -128f
+            jumpState = "GROUNDED"
+        }
+
+        when( currentMoveState ) {
+            "RIGHT" -> velocity.x = 128f
+            "LEFT" -> velocity.x = -128f
+            else -> velocity.x = 0f
+        }
+
+
+
         //gravity
         acceleration.y += 1440f * dt
 
@@ -127,7 +140,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
             for ( j in 0 until state.map.gameMap[i].size) {
                 if (state.map.gameMap[i][j]?.rectangle != null && rectangle.overlaps(state.map.gameMap[i][j]?.rectangle)) {
                     if (velocity.y > 0) {
-                        grounded = true
+                        jumpState = "GROUNDED"
                         rectangle.y = state.map.gameMap[i][j]!!.rectangle.y - rectangle.height
                     }
                     else rectangle.y = state.map.gameMap[i][j]!!.rectangle.y + state.map.gameMap[i][j]!!.rectangle.height
@@ -148,23 +161,12 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
             }
         }
 
-        for ( ally in allies ) {
-            if ( ally != this && rectangle.overlaps(ally.rectangle)) {
-                if (velocity.y > 0) {
-                    rectangle.y = ally.rectangle.y - rectangle.height
-                }
-                else rectangle.y = ally.rectangle.y + ally.rectangle.height
-                velocity.y = 0f
-                acceleration.y = 0f
-            }
-        }
-
         rectangle.x += velocity.x
         for ( i in 0 until state.map.gameMap.size ){
             for ( j in 0 until state.map.gameMap[i].size) {
                 if (state.map.gameMap[i][j]?.rectangle != null && rectangle.overlaps(state.map.gameMap[i][j]?.rectangle)) {
                     if ( velocity.y > 0 ) {
-                        grounded = true
+                        jumpState = "GROUNDED"
                         acceleration.y = 0f
                     }
                     if (velocity.x > 0) {
@@ -187,20 +189,6 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
                 acceleration.x = 0f
             }
         }
-
-        for ( ally in enemies ) {
-            if ( ally != this && rectangle.overlaps(ally.rectangle)) {
-                if (velocity.x > 0) {
-                    rectangle.x = ally.rectangle.x - rectangle.width
-                }
-                else rectangle.x = ally.rectangle.x + ally.rectangle.width
-                velocity.x = 0f
-                acceleration.x = 0f
-            }
-        }
-
-        //prevents the player from going off of the screen to the left.
-        if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
 
         //sets the player's sprite's location to the player's rectangle's location.
         sprite.x = rectangle.x

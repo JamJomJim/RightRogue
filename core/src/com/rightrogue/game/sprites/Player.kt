@@ -2,10 +2,11 @@ package com.rightrogue.game.sprites
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.rightrogue.game.RightRogue
 import com.rightrogue.game.states.PlayState
 import kotlin.math.absoluteValue
 
-class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Texture) : Entity(xPos, yPos, width, height, texture){
+class Player (xPos: Float, yPos: Float, val width: Float, height: Float, texture: Texture) : Entity(xPos, yPos, width, height, texture){
     override val maxHealth = 10
     override var currentHealth = 10
     override var regeneration = 1
@@ -29,9 +30,8 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         val touchJump = Gdx.input.isTouched(0) && x0 >= 480 && yVel0 <= -10 || Gdx.input.isTouched(1) && x1 >= 480 && yVel1 <= -10
         val touchAttack = Gdx.input.isTouched(0) && x0 >= 480 && xVel0.absoluteValue >= 10 || Gdx.input.isTouched(1) && x1 >= 480 && xVel1.absoluteValue >= 10
 
-        if ( touchJump && grounded ) {
-                velocity.y = -128f
-                grounded = false
+        if ( touchJump && jumpState == "GROUNDED" ) {
+            jumpState = "JUMPING"
         }
 
         if ( touchAttack && attackCooldown >= 0.5f ) {
@@ -41,23 +41,26 @@ class Player (xPos: Float, yPos: Float, width: Float, height: Float, texture: Te
         //todo need to add some acceleration to smooth out movement. The player suddenly stops when they life their finger.
         when{
             touchRight -> {
-                velocity.x = 128f
-                previousState = currentState
-                currentState = "RIGHT"
+                previousMoveState = currentMoveState
+                currentMoveState = "RIGHT"
                 direction = "RIGHT"
             }
             touchLeft -> {
-                velocity.x = -128f
-                previousState = currentState
-                currentState = "LEFT"
+                previousMoveState = currentMoveState
+                currentMoveState = "LEFT"
                 direction = "LEFT"
             }
             else -> {
-                velocity.x  = 0f
-                previousState = currentState
-                currentState = "STILL"
+                previousMoveState = currentMoveState
+                currentMoveState = "STILL"
             }
         }
+    }
+
+    override fun handleMovement(state: PlayState, allies: MutableList<Entity>, enemies: MutableList<Entity>, dt: Float){
+        //prevents the player from going off of the screen to the left.
+        if (rectangle.x < state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f) rectangle.x = state.cam.position.x - RightRogue.PIXEL_WIDTH / 2f
+        super.handleMovement(state, allies, enemies, dt)
     }
 
     override fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
