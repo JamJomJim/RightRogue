@@ -41,7 +41,6 @@ class Map(width: Int, height: Int) {
         gameMap[2][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
         gameMap[3][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
 
-
         //creates a randomly generates path from the end of the spawn path.
         var x = 3
         var y = RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2
@@ -74,7 +73,6 @@ class Map(width: Int, height: Int) {
         if (rand(0, 1) == 1) {
             y = gameMap.last().lastIndexOf(null)
         }
-    //    if ( y == -1 ) y = 6
 
         newMapPiece[y] = null
 

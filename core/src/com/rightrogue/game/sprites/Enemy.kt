@@ -16,22 +16,14 @@ class Enemy(xPos: Float, yPos: Float, private val width: Float, height: Float, t
     }
 
     override fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
-        super.update(state, allies, enemies, dt)
 
+        //this is where the enemy's decision are determined.
         attackCooldown += dt
         if ( !attacking && attackCooldown > 0.5f ) {
             for (enemy in enemies) {
                 if (rangeOfAttack.overlaps(enemy.rectangle)) {
                     attacking = true
                 }
-            }
-        }
-
-        if ( attacking ) {
-            currentMoveState = "STILL"
-            attackDelay += dt
-            if ( attackDelay > 1f) {
-                attack( enemies )
             }
         }
 
@@ -51,6 +43,17 @@ class Enemy(xPos: Float, yPos: Float, private val width: Float, height: Float, t
                 currentMoveState = "STILL"
             }
         }
+
+        //If the enemy decides to attack, then stop moving and attack after 1 second.
+        if ( attacking ) {
+            currentMoveState = "STILL"
+            attackDelay += dt
+            if ( attackDelay > 1f) {
+                attack( enemies )
+            }
+        }
+
+        super.update(state, allies, enemies, dt)
 
         handleMovement(state, allies, enemies, dt)
     }

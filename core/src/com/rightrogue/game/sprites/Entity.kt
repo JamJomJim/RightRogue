@@ -70,7 +70,6 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
                 collidableBlocks[i][j] = state.map.gameMap[x][relativePositionY - 1 + j]
             }
         }
-        println(collidableBlocks)
     }
 
     open fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
@@ -123,7 +122,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
     open fun handleMovement(state: PlayState, allies: MutableList<Entity>, enemies: MutableList<Entity>, dt: Float){
         if ( jumpState == "JUMPING" ) {
             velocity.y = -128f
-            jumpState = "GROUNDED"
+            jumpState = "FALLING"
         }
 
         when( currentMoveState ) {
@@ -131,7 +130,6 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
             "LEFT" -> velocity.x = -128f
             else -> velocity.x = 0f
         }
-
 
 
         //gravity
