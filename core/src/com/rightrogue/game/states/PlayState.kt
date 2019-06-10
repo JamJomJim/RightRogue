@@ -19,6 +19,7 @@ import com.rightrogue.game.rand
 import com.rightrogue.game.sprites.Enemy
 import com.rightrogue.game.sprites.Player
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
+import com.rightrogue.game.sprites.Block
 import com.rightrogue.game.sprites.Entity
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -131,7 +132,17 @@ class PlayState(private var gsm: GameStateManager) : State(){
 
     }
 
+
+
     override fun update(dt: Float) {
+      //  println(map.gameMap[0][0]!!.position.x)
+       // println(cam.position.x)
+        for ( enemy in enemies ) {
+           // println("relative Pos X: " + (enemy.rectangle.x - map.gameMap[0][0]!!.position.x) / 48)
+           // println("relative Pos Y: " + (enemy.rectangle.y / 48).toInt())
+
+        }
+        player.getCollidableBlocks(this, player)
 
         //updates the player and enemies
         player.update(this, allies, enemies, dt)
