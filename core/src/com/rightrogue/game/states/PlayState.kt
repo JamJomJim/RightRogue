@@ -37,7 +37,9 @@ class PlayState(private var gsm: GameStateManager) : State(){
     var player : Player
     private var allies = mutableListOf<Entity>()
     private var enemies = mutableListOf<Entity>()
-    private var distanceCompleted = 0
+
+    private var prevDistanceCompleted = 0
+    private var currDistanceCompleted = 0
 
     var map = Map(RightRogue.BLOCK_WIDTH + 2, RightRogue.BLOCK_HEIGHT)
 
@@ -94,13 +96,19 @@ class PlayState(private var gsm: GameStateManager) : State(){
     }
 
     private fun saveGame() {
+        //saves the map.
         map.saveMap()
         save.putString("mapSave", mapJsonAdapter.toJson(map.layout.toTypedArray()))
+
+        //saves the distance completed.
+        val playerDistanceFromStartPoint = ((player.rectangle.x - map.gameMap[0][0]!!.position.x) / 48f).toInt()
+        save.putInteger("distance", currDistanceCompleted + prevDistanceCompleted - playerDistanceFromStartPoint)
         save.flush()
     }
 
     private fun loadGame() {
         map.loadMap(mapJsonAdapter.fromJson(save.getString("mapSave"))!!.toMutableList())
+        prevDistanceCompleted = save.getInteger("distance")
     }
 
     //if the back button is pushed, pause the game
@@ -127,17 +135,17 @@ class PlayState(private var gsm: GameStateManager) : State(){
         //not sure this does anything since nothing within the stage moves?
         stage.act(dt)
         //updates the map when the player has gone far enough right.
-        if (player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted && player.sprite.x / RightRogue.PIXELS_PER_BLOCK >= 3) {
-            distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
-            map.updateMap(distanceCompleted)
+        if (player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > currDistanceCompleted && player.sprite.x / RightRogue.PIXELS_PER_BLOCK >= 3) {
+            currDistanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
+            map.updateMap(currDistanceCompleted)
             //has a 1 in 8 chance of spawning an enemy every time more map generates.
             if ( rand(1, 8) == 1)
                 enemies.add(Enemy(RightRogue.BLOCK_WIDTH + player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK.toFloat() - 1, map.gameMap.last().indexOfLast { it == null }.toFloat(),24f,32f, enemyTextures))
         }
 
         //updates distance completed.
-        else if ( player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > distanceCompleted )
-            distanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
+        else if ( player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK > currDistanceCompleted )
+            currDistanceCompleted = player.sprite.x.toInt() / RightRogue.PIXELS_PER_BLOCK
 
         //updates the camera to follow the player as they move to the right.
         if (cam.position.x < player.sprite.x + RightRogue.PIXEL_WIDTH / 2 - 2 * RightRogue.PIXELS_PER_BLOCK){
@@ -176,7 +184,7 @@ class PlayState(private var gsm: GameStateManager) : State(){
         sb.end()
 
         //updates the distance completed label
-        distLabel.setText("Distance Completed: $distanceCompleted")
+        distLabel.setText("Distance Completed: " + (currDistanceCompleted + prevDistanceCompleted))
         stage.draw()
         shapeRenderer.projectionMatrix = cam.combined
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
