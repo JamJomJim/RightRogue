@@ -17,7 +17,7 @@ class Enemy(xPos: Float, yPos: Float, private val width: Float, height: Float, t
 
     override fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
 
-        //this is where the enemy's decision are determined.
+        //this is where the enemy's decisions are determined.
         attackCooldown += dt
         if ( !attacking && attackCooldown > 0.5f ) {
             for (enemy in enemies) {
@@ -41,6 +41,15 @@ class Enemy(xPos: Float, yPos: Float, private val width: Float, height: Float, t
             else -> {
                 previousMoveState = currentMoveState
                 currentMoveState = "STILL"
+            }
+        }
+        val collidableBlocks = getCollidableBlocks(state, this)
+        println(collidableBlocks)
+        if (collidableBlocks[1][1] !is Block && collidableBlocks[1][0] !is Block) {
+            if (direction == "RIGHT" && collidableBlocks[2][1] is Block && collidableBlocks[2][0] !is Block) {
+                jumpState = "JUMPING"
+            } else if (direction == "LEFT" && collidableBlocks[0][1] is Block && collidableBlocks[0][0] !is Block) {
+                jumpState = "JUMPING"
             }
         }
 

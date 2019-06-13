@@ -58,7 +58,7 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
         sprite.y = rectangle.y
     }
 
-    fun getCollidableBlocks(state: PlayState, entity: Entity){
+    fun getCollidableBlocks(state: PlayState, entity: Entity) : MutableList<MutableList<Block?>>{
         val relativePositionX = ((entity.rectangle.x - state.map.gameMap[0][0]!!.position.x) / 48f).toInt()
         val relativePositionY = (entity.rectangle.y / 48f).toInt()
         val collidableBlocks = MutableList(3) {arrayOfNulls<Block>(3).toMutableList()}
@@ -66,10 +66,11 @@ abstract class Entity(xPos: Float, yPos: Float, width: Float, height: Float, spr
         for ( i in 0..2 ) {
             for ( j in 0..2 ) {
                 val x = relativePositionX - 1 +  i
-                if ( x < 0 ) break
+                if ( x < 0 || x > 21) break
                 collidableBlocks[i][j] = state.map.gameMap[x][relativePositionY - 1 + j]
             }
         }
+        return collidableBlocks
     }
 
     open fun update(state: PlayState, allies : MutableList<Entity>, enemies : MutableList<Entity>, dt: Float){
