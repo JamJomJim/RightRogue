@@ -11,16 +11,16 @@ class Map(width: Int, height: Int) {
     }
 
     fun saveMap(){
-        for (i in 0 until gameMap.size) {
-            for (j in 0 until gameMap[i].size) {
+        for (i in gameMap.indices) {
+            for (j in gameMap[i].indices) {
                 if ( gameMap[i][j] != null ) layout[i][j] = gameMap[i][j]!!.blockType
             }
         }
     }
 
     fun loadMap(mapLayout: MutableList<Array<String>>){
-        for (i in 0 until mapLayout.size) {
-            for (j in 0 until mapLayout[i].size) {
+        for (i in mapLayout.indices) {
+            for (j in mapLayout[i].indices) {
                 if ( mapLayout[i][j] == "nothing" ) gameMap[i][j] = null
                 else gameMap[i][j] = Block(i.toFloat(), j.toFloat(), mapLayout[i][j])
             }
@@ -29,8 +29,8 @@ class Map(width: Int, height: Int) {
 
     private fun newMap(){
         //creates a map the size of the screen completely full of blocks.
-        for (i in 0 until gameMap.size) {
-            for (j in 0 until gameMap[i].size) {
+        for (i in gameMap.indices) {
+            for (j in gameMap[i].indices) {
                 gameMap[i][j] = Block(i.toFloat(), j.toFloat(), "default")
             }
         }
@@ -41,7 +41,7 @@ class Map(width: Int, height: Int) {
         gameMap[2][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
         gameMap[3][RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2] = null
 
-        //creates a randomly generates path from the end of the spawn path.
+        //creates a randomly generated path from the end of the spawn path.
         var x = 3
         var y = RightRogue.PIXEL_HEIGHT / RightRogue.PIXELS_PER_BLOCK / 2
 
